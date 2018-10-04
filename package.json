@@ -1,0 +1,36 @@
+{
+  "name": "polyteh-vk-bot",
+  "version": "0.0.1",
+  "description": "VK bot having the ability to give useful information",
+  "repository": "https://github.com/0ArturkA/polyteh-vk-bot",
+  "author": "ArturkA",
+  "license": "MIT",
+  "scripts": {
+    "start": "npm run serve",
+    "build": "npm run build-ts && npm run tslint && npm run copy-static-assets",
+    "serve": "node dist/bot.js",
+    "watch-node": "nodemon dist/bot.js",
+    "watch": "npm run watch-ts && npm run watch-node",
+    "build-ts": "tsc",
+    "watch-ts": "tsc -w",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "debug": "npm run build && npm run watch-debug",
+    "serve-debug": "nodemon --inspect dist/bot.js",
+    "watch-debug": "npm run watch-ts && npm run serve-debug"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "dotenv": "^6.0.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2",
+    "sharp": "^0.21.0",
+    "vk-io": "^4.0.0-rc.5"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.9",
+    "@types/dotenv": "^4.0.3",
+    "@types/request": "^2.47.1",
+    "@types/request-promise": "^4.1.42",
+    "@types/sharp": "^0.17.10"
+  }
+}
