@@ -9,14 +9,14 @@
     "start": "npm run serve",
     "postinstall": "npm run build",
     "build": "npm run build-ts && npm run tslint",
-    "serve": "node dist/server.js",
-    "watch-node": "nodemon dist/server.js",
+    "serve": "node dist/bot.js",
+    "watch-node": "nodemon dist/bot.js",
     "watch": "npm run watch-ts && npm run watch-node",
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "debug": "npm run build && npm run watch-debug",
-    "serve-debug": "nodemon --inspect dist/server.js",
+    "serve-debug": "nodemon --inspect dist/bot.js",
     "watch-debug": "npm run watch-ts && npm run serve-debug"
   },
   "dependencies": {
