@@ -20,7 +20,7 @@ vk.setOptions({
 });
 
 // Skip outbox message and handle errors
-vk.updates.use(async (context: any, next: (...args: any[]) => any): Promise < void > => {
+vk.updates.use(async (context: any, next: (...args: any[]) => any): Promise <void> => {
   if (context.is('message') && context.isOutbox) {
     return;
   }
@@ -33,7 +33,7 @@ vk.updates.use(async (context: any, next: (...args: any[]) => any): Promise < vo
 });
 
 // Handle message payload
-vk.updates.use(async (context: any, next: (...args: any[]) => any): Promise < void > => {
+vk.updates.use(async (context: any, next: (...args: any[]) => any): Promise <void> => {
   if (context.is('message')) {
     const {
       messagePayload
@@ -52,19 +52,12 @@ const hearCommand = (name: string, conditions: string[], handle: (context: any) 
 
   vk.updates.hear(
     [
-      (text, {
-        state
-      }) => {
-        console.log(`New read message: "${text}"`);
-
-        console.log(`State command: ${state.command}`);
-        if (state.command === name) {
+      (text, context) => {
+        if (context.state.command === name) {
           return true;
         }
 
-        console.log('Verify of treatment to bot');
-        if (/\[club\d+\|?.+\] \/[a-zA-Z0-9А-Яа-я]+/.test(text)) {
-          console.log('Check commands');
+        if (/[club\d+\|?.+\] \/[a-zA-Z0-9А-Яа-я]+/.test(text)) { // Check command format
           for (const command of conditions) {
             if (text.indexOf(command) > -1) {
               return true;
