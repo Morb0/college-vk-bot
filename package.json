@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "start": "npm run serve",
-    "build": "npm run build-ts && npm run tslint && npm run copy-static-assets",
+    "postinstall": "npm run build",
+    "build": "npm run build-ts && npm run tslint",
     "serve": "node dist/bot.js",
     "watch-node": "nodemon dist/bot.js",
     "watch": "npm run watch-ts && npm run watch-node",
