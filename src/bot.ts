@@ -135,3 +135,17 @@ async function run() {
 }
 
 run().catch(console.error);
+
+// Web server
+const http = require('http');
+const server = http.createServer((req, res) => res.end('Bot work'));
+server.listen(process.env.PORT || 3000);
+
+// Anti server sleep
+(function wakeUp() {
+  require('open')('https://mywebsite.herokuapp.com', (err) => {
+    if (err) throw err;
+    console.log('Woke up!');
+    setTimeout(wakeUp, 29 * (60 * 1000)); // 29m
+  });
+})();
