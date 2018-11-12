@@ -91,11 +91,17 @@ hearCommand('timetable', ['/tt', '/timetable', '/raspisanie', '/rasp', '/рас�
     encoding: null,
   });
 
+  // Load to sharp
+  const sharpImg = sharp(imgBuffer);
+
+  // Check image size
+  const imgInfo = await sharpImg.metadata();
+
   // Modify image
-  const modifiedImgBuffer = await sharp(imgBuffer)
+  const modifiedImgBuffer = await sharpImg
     .extract({
       left: 0,
-      top: 558,
+      top: imgInfo.height - 177, // calculated image size
       width: 129,
       height: 177
     }) // Extract table
