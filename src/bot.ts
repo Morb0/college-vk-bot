@@ -146,6 +146,6 @@ server.listen(process.env.PORT || 3000);
   await rp.get(process.env.HEROKU_APP_URL, (err) => {
     if (err) throw err;
     console.log('Woke up!');
-    setTimeout(wakeUp, 29 * (60 * 1000)); // 29m
+    setTimeout(wakeUp, 15 * (60 * 1000)); // 15m
   });
 })();
