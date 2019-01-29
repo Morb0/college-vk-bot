@@ -154,6 +154,30 @@ hearCommand('callSchedule1', ['/cs1', '/call1'], async (context: any) => {
   });
 });
 
+hearCommand('callSchedule2', ['/cs2', '/call2'], async (context: any) => {
+  const imageUrlTuesday = `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_2.png`;
+  const imageUrlOther = `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_1.png`;
+  const currentDay = new Date().getDay();
+
+  // Get image
+  const imgBuffer = await rp.get(
+    currentDay === 2 ? imageUrlTuesday : imageUrlOther,
+    {
+      encoding: null
+    }
+  );
+
+  // Attach photo
+  const attachmentPhoto = await vk.upload.messagePhoto({
+    source: imgBuffer
+  });
+
+  // Send message
+  context.send({
+    attachment: attachmentPhoto
+  });
+});
+
 hearCommand('hook', ['/hook'], async (context: any) => {
   const members = await vk.api.messages.getConversationMembers({
     peer_id: context.peerId
