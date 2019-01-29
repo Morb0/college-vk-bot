@@ -178,7 +178,7 @@ hearCommand('callSchedule2', ['/cs2', '/call2'], async (context: any) => {
   });
 });
 
-hearCommand('hook', ['/hook'], async (context: any) => {
+hearCommand('hook', [], async (context: any) => {
   const members = await vk.api.messages.getConversationMembers({
     peer_id: context.peerId,
   });
@@ -192,12 +192,13 @@ hearCommand('hook', ['/hook'], async (context: any) => {
   );
 });
 
-hearCommand('milos', ['/ricardo', '/milos'], async (context: any) => {
-  const imageUrl =
-    'https://pp.userapi.com/c846417/v846417081/13778f/5h8TWF_P97M.jpg';
+hearCommand('milos', ['/ricardo'], async (context: any) => {
+  const imagesUrl = [
+    'https://pp.userapi.com/c846417/v846417081/13778f/5h8TWF_P97M.jpg',
+  ];
 
   // Get image
-  const imgBuffer = await rp.get(imageUrl, {
+  const imgBuffer = await rp.get(imagesUrl[getRandomInt(0, imagesUrl.length)], {
     encoding: null,
   });
 
