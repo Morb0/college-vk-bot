@@ -178,7 +178,7 @@ hearCommand('callSchedule2', ['/cs2', '/call2'], async (context: any) => {
   });
 });
 
-hearCommand('hook', ['/hook'], async (context: any) => {
+hearCommand('hook', ['/hook', '/h'], async (context: any) => {
   const members = await vk.api.messages.getConversationMembers({
     peer_id: context.peerId,
   });
@@ -218,7 +218,7 @@ hearCommand('milos', ['/ricardo', '/milos'], async (context: any) => {
   });
 });
 
-hearCommand('fact', ['/f'], async (context: any) => {
+hearCommand('fact', ['/fact', '/f'], async (context: any) => {
   const randomFact = facts[getRandomInt(0, facts.length)];
 
   // Send message
