@@ -1,7 +1,5 @@
 import * as dotenv from 'dotenv';
-import {
-  VK,
-} from 'vk-io';
+import { VK } from 'vk-io';
 import * as rp from 'request-promise';
 import * as cheerio from 'cheerio';
 import sharp from 'sharp';
@@ -20,34 +18,41 @@ vk.setOptions({
 });
 
 // Skip outbox message and handle errors
-vk.updates.use(async (context: any, next: (...args: any[]) => any): Promise <void> => {
-  if (context.is('message') && context.isOutbox) {
-    return;
-  }
+vk.updates.use(
+  async (context: any, next: (...args: any[]) => any): Promise<void> => {
+    if (context.is('message') && context.isOutbox) {
+      return;
+    }
 
-  try {
-    await next();
-  } catch (error) {
-    console.error('Error:', error);
+    try {
+      await next();
+    } catch (error) {
+      console.error('Error:', error);
+    }
   }
-});
+);
 
 // Handle message payload
-vk.updates.use(async (context: any, next: (...args: any[]) => any): Promise <void> => {
-  if (context.is('message')) {
-    const {
-      messagePayload
-    } = context;
+vk.updates.use(
+  async (context: any, next: (...args: any[]) => any): Promise<void> => {
+    if (context.is('message')) {
+      const { messagePayload } = context;
 
-    context.state.command = messagePayload && messagePayload.command ?
-      messagePayload.command :
-      null;
+      context.state.command =
+        messagePayload && messagePayload.command
+          ? messagePayload.command
+          : null;
+    }
+
+    await next();
   }
+);
 
-  await next();
-});
-
-const hearCommand = (name: string, conditions: string[], handle: (context: any) => any): void => {
+const hearCommand = (
+  name: string,
+  conditions: string[],
+  handle: (context: any) => any
+): void => {
   console.log(`Bot register commands: ${conditions.join(', ')}`);
 
   vk.updates.hear(
@@ -57,9 +62,10 @@ const hearCommand = (name: string, conditions: string[], handle: (context: any) 
           return true;
         }
 
-        if (/[club\d+\|?.+\] \/[a-zA-Z0-9А-Яа-я]+/.test(text)) { // Check command format
+        if (/[club\d+\|?.+\] \/[a-zA-Z0-9А-Яа-я]+/.test(text)) {
+          // Check command format
           for (const command of conditions) {
-            if (text.indexOf(command) > -1) {
+            if (text.startsWith(command)) {
               return true;
             }
           }
@@ -78,54 +84,64 @@ hearCommand('hello', ['/hello'], (context: any) => {
   context.sendSticker(9015);
 });
 
-hearCommand('timetable', ['/tt', '/timetable', '/raspisanie', '/rasp', '/расписание', '/расп'], async (context: any) => {
-  // Get image url
-  const $ = await rp.get(`${ENDPOINT}/raspisanie`, {
-    transform: (body: string) => cheerio.load(body)
-  });
+hearCommand(
+  'timetable',
+  ['/tt', '/timetable', '/raspisanie', '/rasp', '/расписание', '/расп'],
+  async (context: any) => {
+    // Get image url
+    const $ = await rp.get(`${ENDPOINT}/raspisanie`, {
+      transform: (body: string) => cheerio.load(body)
+    });
 
-  const imageUrl = $('.page_raspis_block_img').find('img').first().attr('src');
+    const imageUrl = $('.page_raspis_block_img')
+      .find('img')
+      .first()
+      .attr('src');
 
-  // Get image
-  const imgBuffer = await rp.get(imageUrl, {
-    encoding: null,
-  });
+    // Get image
+    const imgBuffer = await rp.get(imageUrl, {
+      encoding: null
+    });
 
-  // Load to sharp
-  const sharpImg = sharp(imgBuffer);
+    // Load to sharp
+    const sharpImg = sharp(imgBuffer);
 
-  // Check image size
-  const imgInfo = await sharpImg.metadata();
+    // Check image size
+    const imgInfo = await sharpImg.metadata();
 
-  // Modify image
-  const modifiedImgBuffer = await sharpImg
-    .extract({
-      left: 0,
-      top: imgInfo.height - 177, // calculated image size
-      width: 129,
-      height: 177
-    }) // Extract table
-    .resize(258, 354) // Resize x2
-    .toBuffer();
+    // Modify image
+    const modifiedImgBuffer = await sharpImg
+      .extract({
+        left: 0,
+        top: imgInfo.height - 177, // calculated image size
+        width: 129,
+        height: 177
+      }) // Extract table
+      .resize(258, 354) // Resize x2
+      .toBuffer();
 
-  const attachmentPhoto = await vk.upload.messagePhoto({
-    source: modifiedImgBuffer
-  });
+    const attachmentPhoto = await vk.upload.messagePhoto({
+      source: modifiedImgBuffer
+    });
 
-  context.send({
-    attachment: attachmentPhoto
-  });
-});
+    context.send({
+      attachment: attachmentPhoto
+    });
+  }
+);
 
 hearCommand('hook', ['/hook'], async (context: any) => {
   const members = await vk.api.messages.getConversationMembers({
-    peer_id: context.peerId,
+    peer_id: context.peerId
   });
 
   // Get random profile
-  const randomProfile = members.profiles[getRandomInt(0, members.profiles.length)];
+  const randomProfile =
+    members.profiles[getRandomInt(0, members.profiles.length)];
 
-  context.send(`Get over here - ${randomProfile.first_name} ${randomProfile.last_name}`);
+  context.send(
+    `Get over here - ${randomProfile.first_name} ${randomProfile.last_name}`
+  );
 });
 
 async function run() {
@@ -149,7 +165,7 @@ server.listen(process.env.PORT || 3000);
 
 // Anti server sleep
 (async function wakeUp() {
-  await rp.get(process.env.HEROKU_APP_URL, (err) => {
+  await rp.get(process.env.HEROKU_APP_URL, err => {
     if (err) throw err;
     console.log('Woke up!');
     setTimeout(wakeUp, 15 * (60 * 1000)); // 15m
