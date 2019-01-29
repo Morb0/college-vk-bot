@@ -14,7 +14,7 @@ const vk = new VK();
 // Setup token
 vk.setOptions({
   token: process.env.VK_TOKEN,
-  pollingGroupId: process.env.GROUP_ID
+  pollingGroupId: process.env.GROUP_ID,
 });
 
 // Skip outbox message and handle errors
@@ -29,7 +29,7 @@ vk.updates.use(
     } catch (error) {
       console.error('Error:', error);
     }
-  }
+  },
 );
 
 // Handle message payload
@@ -45,13 +45,13 @@ vk.updates.use(
     }
 
     await next();
-  }
+  },
 );
 
 const hearCommand = (
   name: string,
   conditions: string[],
-  handle: (context: any) => any
+  handle: (context: any) => any,
 ): void => {
   console.log(`Bot register commands: ${conditions.join(', ')}`);
 
@@ -73,9 +73,9 @@ const hearCommand = (
 
         return false;
       },
-      ...conditions
+      ...conditions,
     ],
-    handle
+    handle,
   );
 };
 
@@ -90,7 +90,7 @@ hearCommand(
   async (context: any) => {
     // Get image url
     const $ = await rp.get(`${ENDPOINT}/raspisanie`, {
-      transform: (body: string) => cheerio.load(body)
+      transform: (body: string) => cheerio.load(body),
     });
 
     const imageUrl = $('.page_raspis_block_img')
@@ -100,7 +100,7 @@ hearCommand(
 
     // Get image
     const imgBuffer = await rp.get(imageUrl, {
-      encoding: null
+      encoding: null,
     });
 
     // Load to sharp
@@ -115,19 +115,19 @@ hearCommand(
         left: 0,
         top: imgInfo.height - 177, // calculated image size
         width: 129,
-        height: 177
+        height: 177,
       }) // Extract table
       .resize(258, 354) // Resize x2
       .toBuffer();
 
     const attachmentPhoto = await vk.upload.messagePhoto({
-      source: modifiedImgBuffer
+      source: modifiedImgBuffer,
     });
 
     context.send({
-      attachment: attachmentPhoto
+      attachment: attachmentPhoto,
     });
-  }
+  },
 );
 
 hearCommand('callSchedule1', ['/cs1', '/call1'], async (context: any) => {
@@ -139,18 +139,18 @@ hearCommand('callSchedule1', ['/cs1', '/call1'], async (context: any) => {
   const imgBuffer = await rp.get(
     currentDay === 2 ? imageUrlTuesday : imageUrlOther,
     {
-      encoding: null
-    }
+      encoding: null,
+    },
   );
 
   // Attach photo
   const attachmentPhoto = await vk.upload.messagePhoto({
-    source: imgBuffer
+    source: imgBuffer,
   });
 
   // Send message
   context.send({
-    attachment: attachmentPhoto
+    attachment: attachmentPhoto,
   });
 });
 
@@ -163,24 +163,24 @@ hearCommand('callSchedule2', ['/cs2', '/call2'], async (context: any) => {
   const imgBuffer = await rp.get(
     currentDay === 2 ? imageUrlTuesday : imageUrlOther,
     {
-      encoding: null
-    }
+      encoding: null,
+    },
   );
 
   // Attach photo
   const attachmentPhoto = await vk.upload.messagePhoto({
-    source: imgBuffer
+    source: imgBuffer,
   });
 
   // Send message
   context.send({
-    attachment: attachmentPhoto
+    attachment: attachmentPhoto,
   });
 });
 
 hearCommand('hook', ['/hook'], async (context: any) => {
   const members = await vk.api.messages.getConversationMembers({
-    peer_id: context.peerId
+    peer_id: context.peerId,
   });
 
   // Get random profile
@@ -188,7 +188,7 @@ hearCommand('hook', ['/hook'], async (context: any) => {
     members.profiles[getRandomInt(0, members.profiles.length)];
 
   context.send(
-    `Get over here - ${randomProfile.first_name} ${randomProfile.last_name}`
+    `Get over here - ${randomProfile.first_name} ${randomProfile.last_name}`,
   );
 });
 
@@ -198,17 +198,17 @@ hearCommand('milos', ['/ricardo', '/milos'], async (context: any) => {
 
   // Get image
   const imgBuffer = await rp.get(imageUrl, {
-    encoding: null
+    encoding: null,
   });
 
   // Attach photo
   const attachmentPhoto = await vk.upload.messagePhoto({
-    source: imgBuffer
+    source: imgBuffer,
   });
 
   // Send message
   context.send({
-    attachment: attachmentPhoto
+    attachment: attachmentPhoto,
   });
 });
 
