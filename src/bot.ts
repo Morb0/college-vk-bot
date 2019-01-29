@@ -15,7 +15,7 @@ const vk = new VK();
 // Setup token
 vk.setOptions({
   token: process.env.VK_TOKEN,
-  pollingGroupId: process.env.GROUP_ID,
+  pollingGroupId: +process.env.GROUP_ID,
 });
 
 // Skip outbox message and handle errors
@@ -227,7 +227,9 @@ hearCommand('fact', ['/fact', '/f'], async (context: any) => {
 
 async function run() {
   if (process.env.UPDATES === 'webhook') {
-    await vk.updates.startWebhook();
+    await vk.updates.startWebhook({
+      tls: null,
+    });
 
     console.log('Webhook server started');
   } else {
