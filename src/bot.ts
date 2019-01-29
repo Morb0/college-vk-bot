@@ -192,6 +192,26 @@ hearCommand('hook', ['/hook'], async (context: any) => {
   );
 });
 
+hearCommand('milos', ['/ricardo', '/milos'], async (context: any) => {
+  const imageUrl =
+    'https://pp.userapi.com/c846417/v846417081/13778f/5h8TWF_P97M.jpg';
+
+  // Get image
+  const imgBuffer = await rp.get(imageUrl, {
+    encoding: null
+  });
+
+  // Attach photo
+  const attachmentPhoto = await vk.upload.messagePhoto({
+    source: imgBuffer
+  });
+
+  // Send message
+  context.send({
+    attachment: attachmentPhoto
+  });
+});
+
 async function run() {
   if (process.env.UPDATES === 'webhook') {
     await vk.updates.startWebhook();
