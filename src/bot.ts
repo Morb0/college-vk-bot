@@ -4,6 +4,7 @@ import * as rp from 'request-promise';
 import * as cheerio from 'cheerio';
 import sharp from 'sharp';
 import { getRandomInt } from './utils';
+const facts = require('../data/facts.json');
 
 dotenv.config();
 
@@ -211,6 +212,13 @@ hearCommand('milos', ['/ricardo'], async (context: any) => {
   context.send({
     attachment: attachmentPhoto,
   });
+});
+
+hearCommand('fact', ['/f'], async (context: any) => {
+  const randomFact = facts[getRandomInt(0, facts.length)];
+
+  // Send message
+  context.send(randomFact);
 });
 
 async function run() {
