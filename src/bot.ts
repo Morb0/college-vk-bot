@@ -80,8 +80,8 @@ const hearCommand = (
   );
 };
 
-hearCommand('hello', [], (context: any) => {
-  context.sendSticker(9015);
+hearCommand('alive', ['/alive'], (context: any) => {
+  context.sendSticker(9046);
 });
 
 hearCommand(
@@ -178,7 +178,7 @@ hearCommand('callSchedule2', ['/cs2', '/call2'], async (context: any) => {
   });
 });
 
-hearCommand('hook', [], async (context: any) => {
+hearCommand('hook', ['/hook'], async (context: any) => {
   const members = await vk.api.messages.getConversationMembers({
     peer_id: context.peerId,
   });
@@ -192,9 +192,14 @@ hearCommand('hook', [], async (context: any) => {
   );
 });
 
-hearCommand('milos', ['/ricardo'], async (context: any) => {
+hearCommand('milos', ['/ricardo', '/milos'], async (context: any) => {
   const imagesUrl = [
     'https://pp.userapi.com/c846417/v846417081/13778f/5h8TWF_P97M.jpg',
+    'https://s11.stc.all.kpcdn.net/share/i/12/10740975/inx960x640.jpg',
+    'https://m.tagilcity.ru/attachments/6f265b248234614ca65589f206270885cb53eba1/store/crop_and_fill/0/35/1044/587/450/253/ead0936b690dca636729c1d6b7d2911d9f42f8de6252b188c5ad21334106/2019-01-01_17-18.jpg',
+    'http://c.sibdepo.ru/wp-content/uploads/2019/01/1546175542_1753397232.jpg',
+    'http://pm1.narvii.com/7029/44feb0e1a2c15bbd9503bf1c4998805e76921258r1-1280-720v2_00.jpg',
+    'https://nefteproduct.su/uploads/posts/2019-01/1546367109153de85a01daaa834ee9c2c1725e3f5dd7d8aea61-768x480.png',
   ];
 
   // Get image
