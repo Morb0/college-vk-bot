@@ -80,8 +80,7 @@ const hearCommand = (
   );
 };
 
-hearCommand('hello', ['/hello'], (context: any) => {
-  // context.send('Hello!');
+hearCommand('hello', [], (context: any) => {
   context.sendSticker(9015);
 });
 
