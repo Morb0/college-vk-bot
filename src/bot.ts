@@ -3,7 +3,7 @@ import { VK } from 'vk-io';
 import * as rp from 'request-promise';
 import * as cheerio from 'cheerio';
 import sharp from 'sharp';
-import * as ms from 'ms';
+import ms from 'ms';
 import { getRandomInt } from './utils';
 const facts = require('../data/facts.json');
 
