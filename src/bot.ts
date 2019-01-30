@@ -204,8 +204,8 @@ hearCommand('milos', ['/ricardo', '/milos'], async (context: any) => {
   ];
 
   if (Date.now() < milosTimeout) {
-    const remainingSeconds = (milosTimeout - Date.now()) / 60000;
-    context.send(`Milos flexing now (${remainingSeconds})`);
+    const remainingSeconds = +((milosTimeout - Date.now()) / 60000).toFixed(2);
+    context.send(`Milos is flexing now (${remainingSeconds}m)`);
     return;
   }
   milosTimeout = Date.now() + (1000 * 60 * 30); // 30m
