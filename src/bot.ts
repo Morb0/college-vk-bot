@@ -202,13 +202,14 @@ hearCommand('milos', ['/ricardo', '/milos'], async (context: any) => {
     'http://c.sibdepo.ru/wp-content/uploads/2019/01/1546175542_1753397232.jpg',
     'http://pm1.narvii.com/7029/44feb0e1a2c15bbd9503bf1c4998805e76921258r1-1280-720v2_00.jpg',
     'https://nefteproduct.su/uploads/posts/2019-01/1546367109153de85a01daaa834ee9c2c1725e3f5dd7d8aea61-768x480.png',
+    'https://pp.userapi.com/c846420/v846420245/15d04c/au2oCebRh2Y.jpg',
   ];
 
   if (Date.now() < milosTimeout) {
     context.send(`Milos is flexing now (${ms(milosTimeout - Date.now())})`);
     return;
   }
-  milosTimeout = Date.now() + (1000 * 60 * 30); // 30m
+  milosTimeout = Date.now() + ms('6h');
 
   // Get image
   const imgBuffer = await rp.get(imagesUrl[getRandomInt(0, imagesUrl.length)], {
