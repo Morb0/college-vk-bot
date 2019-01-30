@@ -192,6 +192,7 @@ hearCommand('hook', ['/hook', '/h'], async (context: any) => {
   );
 });
 
+let milosTimeout = Date.now();
 hearCommand('milos', ['/ricardo', '/milos'], async (context: any) => {
   const imagesUrl = [
     'https://pp.userapi.com/c846417/v846417081/13778f/5h8TWF_P97M.jpg',
@@ -201,6 +202,12 @@ hearCommand('milos', ['/ricardo', '/milos'], async (context: any) => {
     'http://pm1.narvii.com/7029/44feb0e1a2c15bbd9503bf1c4998805e76921258r1-1280-720v2_00.jpg',
     'https://nefteproduct.su/uploads/posts/2019-01/1546367109153de85a01daaa834ee9c2c1725e3f5dd7d8aea61-768x480.png',
   ];
+
+  if (Date.now() < milosTimeout) {
+    context.send('Milos in timeout');
+    return;
+  }
+  milosTimeout = Date.now() + (1000 * 60 * 30); // 30m
 
   // Get image
   const imgBuffer = await rp.get(imagesUrl[getRandomInt(0, imagesUrl.length)], {
