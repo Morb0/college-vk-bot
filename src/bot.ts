@@ -3,6 +3,7 @@ import { VK } from 'vk-io';
 import * as rp from 'request-promise';
 import * as cheerio from 'cheerio';
 import sharp from 'sharp';
+import * as ms from 'ms';
 import { getRandomInt } from './utils';
 const facts = require('../data/facts.json');
 
@@ -204,8 +205,7 @@ hearCommand('milos', ['/ricardo', '/milos'], async (context: any) => {
   ];
 
   if (Date.now() < milosTimeout) {
-    const remainingSeconds = +((milosTimeout - Date.now()) / 60000).toFixed(2);
-    context.send(`Milos is flexing now (${remainingSeconds}m)`);
+    context.send(`Milos is flexing now (${ms(milosTimeout - Date.now())})`);
     return;
   }
   milosTimeout = Date.now() + (1000 * 60 * 30); // 30m
