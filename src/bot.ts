@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { VK } from 'vk-io';
+import { VK, MessageContext } from 'vk-io';
 import * as rp from 'request-promise';
 import * as cheerio from 'cheerio';
 import sharp from 'sharp';
@@ -59,7 +59,7 @@ const hearCommand = (
 
   vk.updates.hear(
     [
-      (text, context) => {
+      (text: string, context: MessageContext) => {
         if (context.state.command === name) {
           return true;
         }
@@ -67,7 +67,7 @@ const hearCommand = (
         if (/[club\d+\|?.+\] \/[a-zA-Z0-9А-Яа-я]+/.test(text)) {
           // Check command format
           for (const command of conditions) {
-            if (text.startsWith(command)) {
+            if (text && text === command) {
               return true;
             }
           }
@@ -155,31 +155,35 @@ hearCommand('callSchedule1', ['/cs1', '/call1'], async (context: any) => {
   });
 });
 
-hearCommand('callSchedule2', ['/cs2', '/call2'], async (context: any) => {
-  const imageUrlTuesday = `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_2.png`;
-  const imageUrlOther = `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_1.png`;
-  const currentDay = new Date().getDay();
+hearCommand(
+  'callSchedule2',
+  ['/cs2', '/call2'],
+  async (context: MessageContext) => {
+    const imageUrlTuesday = `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_2.png`;
+    const imageUrlOther = `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_1.png`;
+    const currentDay = new Date().getDay();
 
-  // Get image
-  const imgBuffer = await rp.get(
-    currentDay === 2 ? imageUrlTuesday : imageUrlOther,
-    {
-      encoding: null,
-    },
-  );
+    // Get image
+    const imgBuffer = await rp.get(
+      currentDay === 2 ? imageUrlTuesday : imageUrlOther,
+      {
+        encoding: null,
+      },
+    );
 
-  // Attach photo
-  const attachmentPhoto = await vk.upload.messagePhoto({
-    source: imgBuffer,
-  });
+    // Attach photo
+    const attachmentPhoto = await vk.upload.messagePhoto({
+      source: imgBuffer,
+    });
 
-  // Send message
-  context.send({
-    attachment: attachmentPhoto,
-  });
-});
+    // Send message
+    context.send({
+      attachment: attachmentPhoto.toString(),
+    });
+  },
+);
 
-hearCommand('hook', ['/hook', '/h'], async (context: any) => {
+hearCommand('hook', ['/hook', '/h'], async (context: MessageContext) => {
   const members = await vk.api.messages.getConversationMembers({
     peer_id: context.peerId,
   });
@@ -194,44 +198,115 @@ hearCommand('hook', ['/hook', '/h'], async (context: any) => {
 });
 
 let milosTimeout = Date.now();
-hearCommand('milos', ['/ricardo', '/milos'], async (context: any) => {
-  const imagesUrl = [
-    'https://pp.userapi.com/c846417/v846417081/13778f/5h8TWF_P97M.jpg',
-    'https://s11.stc.all.kpcdn.net/share/i/12/10740975/inx960x640.jpg',
-    'https://m.tagilcity.ru/attachments/6f265b248234614ca65589f206270885cb53eba1/store/crop_and_fill/0/35/1044/587/450/253/ead0936b690dca636729c1d6b7d2911d9f42f8de6252b188c5ad21334106/2019-01-01_17-18.jpg',
-    'http://c.sibdepo.ru/wp-content/uploads/2019/01/1546175542_1753397232.jpg',
-    'http://pm1.narvii.com/7029/44feb0e1a2c15bbd9503bf1c4998805e76921258r1-1280-720v2_00.jpg',
-    'https://nefteproduct.su/uploads/posts/2019-01/1546367109153de85a01daaa834ee9c2c1725e3f5dd7d8aea61-768x480.png',
-  ];
+hearCommand(
+  'milos',
+  ['/ricardo', '/milos'],
+  async (context: MessageContext) => {
+    const imagesUrl = [
+      'https://pp.userapi.com/c846417/v846417081/13778f/5h8TWF_P97M.jpg',
+      'https://s11.stc.all.kpcdn.net/share/i/12/10740975/inx960x640.jpg',
+      'https://m.tagilcity.ru/attachments/6f265b248234614ca65589f206270885cb53eba1/store/crop_and_fill/0/35/1044/587/450/253/ead0936b690dca636729c1d6b7d2911d9f42f8de6252b188c5ad21334106/2019-01-01_17-18.jpg',
+      'http://c.sibdepo.ru/wp-content/uploads/2019/01/1546175542_1753397232.jpg',
+      'http://pm1.narvii.com/7029/44feb0e1a2c15bbd9503bf1c4998805e76921258r1-1280-720v2_00.jpg',
+      'https://nefteproduct.su/uploads/posts/2019-01/1546367109153de85a01daaa834ee9c2c1725e3f5dd7d8aea61-768x480.png',
+    ];
 
-  if (Date.now() < milosTimeout) {
-    context.send(`Milos is flexing now (${ms(milosTimeout - Date.now())})`);
-    return;
-  }
-  milosTimeout = Date.now() + (1000 * 60 * 30); // 30m
+    if (Date.now() < milosTimeout) {
+      context.send(`Milos is flexing now (${ms(milosTimeout - Date.now())})`);
+      return;
+    }
+    milosTimeout = Date.now() + 1000 * 60 * 30; // 30m
 
-  // Get image
-  const imgBuffer = await rp.get(imagesUrl[getRandomInt(0, imagesUrl.length)], {
-    encoding: null,
-  });
+    // Get image
+    const imgBuffer = await rp.get(
+      imagesUrl[getRandomInt(0, imagesUrl.length)],
+      {
+        encoding: null,
+      },
+    );
 
-  // Attach photo
-  const attachmentPhoto = await vk.upload.messagePhoto({
-    source: imgBuffer,
-  });
+    // Attach photo
+    const attachmentPhoto = await vk.upload.messagePhoto({
+      source: imgBuffer,
+    });
 
-  // Send message
-  context.send({
-    attachment: attachmentPhoto,
-  });
-});
+    // Send message
+    context.send({
+      attachment: attachmentPhoto.toString(),
+    });
+  },
+);
 
-hearCommand('fact', ['/fact', '/f'], async (context: any) => {
+hearCommand('fact', ['/fact', '/f'], async (context: MessageContext) => {
   const randomFact = facts[getRandomInt(0, facts.length)];
 
   // Send message
   context.send(randomFact);
 });
+
+// NOTE: clear for last 200 messages dialogs past 24 hours
+hearCommand('clear', ['/clear', '/c'], async (context: MessageContext) => {
+  clear(context.peerId);
+  vk.api.messages.markAsRead({
+    peer_id: context.peerId,
+    start_message_id: context.id,
+  });
+});
+
+// NOTE: full clear for long dialogs past 24 hours
+hearCommand(
+  'clearfull',
+  ['/clearfull', '/cf'],
+  async (context: MessageContext) => {
+    clear(context.peerId, true);
+    vk.api.messages.markAsRead({
+      peer_id: context.peerId,
+      start_message_id: context.id,
+    });
+  },
+);
+
+function clear(peerId: number, fullClear: boolean = false): void {
+  let prevLastMessageId;
+  const nextClear = async (startMessageId: number = -1) => {
+    console.log('startMessageId', startMessageId);
+    const history = await vk.api.messages.getHistory({
+      count: 200,
+      peer_id: peerId,
+      start_message_id: startMessageId,
+    });
+
+    const messageIdsToDelete = [];
+    for (const message of history.items) {
+      if (message.from_id === -process.env.GROUP_ID) {
+        // NOTE: delete a message only if no more than 24 hours have passed since the message was sent
+        // Convert message date Unix timestamp to timestamp
+        if (Date.now() < message.date * 1000 + ms('24h')) {
+          messageIdsToDelete.push(message.id);
+        }
+      }
+    }
+
+    if (messageIdsToDelete.length) {
+      await vk.api.messages.delete({
+        message_ids: messageIdsToDelete,
+        delete_for_all: true,
+      });
+    }
+
+    if (fullClear) {
+      const lastMessage = history.items[history.items.length - 1];
+
+      if (lastMessage.id === prevLastMessageId) {
+        return;
+      }
+
+      prevLastMessageId = lastMessage.id;
+      nextClear(lastMessage.id);
+    }
+  };
+  nextClear();
+}
 
 async function run() {
   if (process.env.UPDATES === 'webhook') {
