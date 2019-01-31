@@ -1976,6 +1976,11 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
   dependencies:
     wrappy "1"
 
+ontime@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/ontime/-/ontime-0.0.6.tgz#06949e60b35896b486eb3dfc22a34be34c31856a"
+  integrity sha512-gdaxha1Jomz17+HQfZ5FoexKA6LrhNDb4WBKPNsnR1dRqZaxyD/bsvcEnRqni1s4mO+EXKdvkXxzw3as/uU35w==
+
 os-homedir@^1.0.0, os-homedir@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/os-homedir/-/os-homedir-1.0.2.tgz#ffbc4988336e0e833de0c168c7ef152121aa7fb3"

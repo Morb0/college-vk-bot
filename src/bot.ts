@@ -1,11 +1,14 @@
 import * as dotenv from 'dotenv';
-import { VK, MessageContext } from 'vk-io';
+import { VK, MessageContext, Context } from 'vk-io';
 import * as rp from 'request-promise';
 import * as cheerio from 'cheerio';
 import sharp from 'sharp';
+import ontime from 'ontime';
 import ms from 'ms';
+import * as fs from 'fs';
 import { getRandomInt } from './utils';
 const facts = require('../data/facts.json');
+const peerIds = require('../peerIds.json');
 
 dotenv.config();
 
@@ -21,8 +24,11 @@ vk.setOptions({
 
 // Skip outbox message and handle errors
 vk.updates.use(
-  async (context: any, next: (...args: any[]) => any): Promise<void> => {
-    if (context.is('message') && context.isOutbox) {
+  async (
+    context: Context | MessageContext,
+    next: (...args: any[]) => any,
+  ): Promise<void> => {
+    if (context.is(['message']) && context.isOutbox) {
       return;
     }
 
@@ -31,6 +37,24 @@ vk.updates.use(
     } catch (error) {
       console.error('Error:', error);
     }
+  },
+);
+
+// Handle dialogs when bot used
+vk.updates.use(
+  async (
+    context: Context | MessageContext,
+    next: (...args: any[]) => any,
+  ): Promise<void> => {
+    if (context.is(['message'])) {
+      const { peerId } = context;
+      if (peerIds.indexOf(peerId) === -1) {
+        peerIds.push(peerId);
+        fs.writeFileSync('./peerIds.json', JSON.stringify(peerIds));
+      }
+    }
+
+    await next();
   },
 );
 
@@ -251,7 +275,6 @@ hearCommand(
 function clear(peerId: number, fullClear: boolean = false): void {
   let prevLastMessageId;
   const nextClear = async (startMessageId: number = -1) => {
-    console.log('startMessageId', startMessageId);
     const history = await vk.api.messages.getHistory({
       count: 200,
       peer_id: peerId,
@@ -305,6 +328,25 @@ async function run() {
 }
 
 run().catch(console.error);
+
+// Auto message clearing call at 00:00 by Moscow time
+// NOTE: -3h on UTC time format for Moscow
+ontime(
+  {
+    cycle: '21:00:00',
+    utc: true,
+  },
+  async ot => {
+    for (const peerId of peerIds) {
+      await clear(peerId);
+      vk.api.messages.send({
+        peer_id: peerId,
+        message: '♻ Auto full message clearing at 00:00',
+      });
+    }
+    ot.done();
+  },
+);
 
 // Web server
 import * as http from 'http';
