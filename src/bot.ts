@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { VK, MessageContext, Context } from 'vk-io';
+import { VK, MessageContext, Context, AudioAttachment } from 'vk-io';
 import * as rp from 'request-promise';
 import * as cheerio from 'cheerio';
 import sharp from 'sharp';
@@ -201,7 +201,7 @@ hearCommand('hook', ['/hook', '/h'], async (context: MessageContext) => {
   );
 });
 
-let milosTimeout = Date.now();
+let milosTimeout;
 hearCommand(
   'milos',
   ['/ricardo', '/milos'],
@@ -219,7 +219,7 @@ hearCommand(
       context.send(`Milos is flexing now (${ms(milosTimeout - Date.now())})`);
       return;
     }
-    milosTimeout = Date.now() + 1000 * 60 * 30; // 30m
+    milosTimeout = Date.now() + ms('2h');
 
     // Get image
     const imgBuffer = await rp.get(
@@ -240,6 +240,73 @@ hearCommand(
     });
   },
 );
+
+let vikaTimeout;
+hearCommand('vika', ['/vika', '/roflan'], async (context: MessageContext) => {
+  const emotesIds = [
+    1001738,
+    150380,
+    958403,
+    90896,
+    117708,
+    1678208,
+    41135,
+    118081,
+    975930,
+    1844320,
+    1722639,
+    59918,
+    1388990,
+    1381423,
+    771070,
+    1201063,
+    669957,
+    181421,
+    43996,
+    117092,
+    117709,
+    332579,
+    1191320,
+    1228008,
+  ];
+
+  if (Date.now() < vikaTimeout) {
+    context.send(
+      `Arthas takes out the fucking trash (${ms(vikaTimeout - Date.now())})`,
+    );
+    return;
+  }
+  vikaTimeout = Date.now() + ms('1h');
+
+  // Get image
+  const imgBuffer = await rp.get(
+    `https://static-cdn.jtvnw.net/emoticons/v1/${
+      emotesIds[getRandomInt(0, emotesIds.length)]
+    }/3.0`,
+    {
+      encoding: null,
+    },
+  );
+
+  // Attach photo
+  const attachmentPhoto = await vk.upload.messagePhoto({
+    source: imgBuffer,
+  });
+
+  // Attach audio
+  const attachmentAudio = new AudioAttachment(
+    {
+      id: 456239689,
+      owner_id: 2000421094,
+    },
+    vk,
+  );
+
+  // Send message
+  context.send({
+    attachment: [attachmentAudio.toString(), attachmentPhoto.toString()],
+  });
+});
 
 hearCommand('fact', ['/fact', '/f'], async (context: MessageContext) => {
   const randomFact = facts[getRandomInt(0, facts.length)];
