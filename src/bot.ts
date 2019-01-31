@@ -34,22 +34,6 @@ vk.updates.use(
   },
 );
 
-// Handle message payload
-vk.updates.use(
-  async (context: any, next: (...args: any[]) => any): Promise<void> => {
-    if (context.is('message')) {
-      const { messagePayload } = context;
-
-      context.state.command =
-        messagePayload && messagePayload.command
-          ? messagePayload.command
-          : null;
-    }
-
-    await next();
-  },
-);
-
 const hearCommand = (
   name: string,
   conditions: string[],
@@ -59,11 +43,7 @@ const hearCommand = (
 
   vk.updates.hear(
     [
-      (text: string, context: MessageContext) => {
-        if (context.state.command === name) {
-          return true;
-        }
-
+      (text: string) => {
         if (/[club\d+\|?.+\] \/[a-zA-Z0-9А-Яа-я]+/.test(text)) {
           // Check command format
           for (const command of conditions) {
