@@ -24,7 +24,6 @@
     "dotenv": "^6.0.0",
     "express": "^4.16.4",
     "ms": "^2.1.1",
-    "ontime": "^0.0.6",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "sharp": "^0.21.0",

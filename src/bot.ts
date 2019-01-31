@@ -3,7 +3,6 @@ import { VK, MessageContext, Context, AudioAttachment } from 'vk-io';
 import * as rp from 'request-promise';
 import * as cheerio from 'cheerio';
 import sharp from 'sharp';
-import ontime from 'ontime';
 import ms from 'ms';
 import * as fs from 'fs';
 import { getRandomInt } from './utils';
@@ -220,7 +219,7 @@ hearCommand(
       context.send(`Milos is flexing now (${ms(milosTimeout - Date.now())})`);
       return;
     }
-    milosTimeout = Date.now() + ms('2h');
+    milosTimeout = Date.now() + ms('4h');
 
     // Get image
     const imgBuffer = await rp.get(
@@ -277,7 +276,7 @@ hearCommand('vika', ['/vika', '/roflan'], async (context: MessageContext) => {
     );
     return;
   }
-  vikaTimeout = Date.now() + ms('1h');
+  vikaTimeout = Date.now() + ms('2h');
 
   // Get image
   const imgBuffer = await rp.get(
@@ -316,71 +315,6 @@ hearCommand('fact', ['/fact', '/f'], async (context: MessageContext) => {
   context.send(randomFact);
 });
 
-// NOTE: clear for last 200 messages dialogs past 24 hours
-hearCommand('clear', ['/clear', '/c'], async (context: MessageContext) => {
-  clear(context.peerId);
-  vk.api.messages.markAsRead({
-    peer_id: context.peerId,
-    start_message_id: context.id,
-  });
-  context.send('♻ Clearing messages (last 200 messages)');
-});
-
-// NOTE: full clear for long dialogs past 24 hours
-hearCommand(
-  'clearfull',
-  ['/clearfull', '/cf'],
-  async (context: MessageContext) => {
-    clear(context.peerId, true);
-    vk.api.messages.markAsRead({
-      peer_id: context.peerId,
-      start_message_id: context.id,
-    });
-    context.send('♻ Full clearing messages (all messages)');
-  },
-);
-
-function clear(peerId: number, fullClear: boolean = false): void {
-  let prevLastMessageId;
-  const nextClear = async (startMessageId: number = -1) => {
-    const history = await vk.api.messages.getHistory({
-      count: 200,
-      peer_id: peerId,
-      start_message_id: startMessageId,
-    });
-
-    const messageIdsToDelete = [];
-    for (const message of history.items) {
-      if (message.from_id === -process.env.GROUP_ID) {
-        // NOTE: delete a message only if no more than 24 hours have passed since the message was sent
-        // Convert message date Unix timestamp to timestamp
-        if (Date.now() < message.date * 1000 + ms('24h')) {
-          messageIdsToDelete.push(message.id);
-        }
-      }
-    }
-
-    if (messageIdsToDelete.length) {
-      await vk.api.messages.delete({
-        message_ids: messageIdsToDelete,
-        delete_for_all: true,
-      });
-    }
-
-    if (fullClear) {
-      const lastMessage = history.items[history.items.length - 1];
-
-      if (lastMessage.id === prevLastMessageId) {
-        return;
-      }
-
-      prevLastMessageId = lastMessage.id;
-      nextClear(lastMessage.id);
-    }
-  };
-  nextClear();
-}
-
 async function run() {
   if (process.env.UPDATES === 'webhook') {
     await vk.updates.startWebhook({
@@ -396,25 +330,6 @@ async function run() {
 }
 
 run().catch(console.error);
-
-// Auto message clearing call at 00:00 by Moscow time
-// NOTE: -3h on UTC time format for Moscow
-ontime(
-  {
-    cycle: '21:00:00',
-    utc: true,
-  },
-  async ot => {
-    for (const peerId of peerIds) {
-      await clear(peerId);
-      vk.api.messages.send({
-        peer_id: peerId,
-        message: '♻ Auto full message clearing at 00:00',
-      });
-    }
-    ot.done();
-  },
-);
 
 // Web server
 import * as http from 'http';
