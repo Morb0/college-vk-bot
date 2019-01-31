@@ -323,7 +323,7 @@ hearCommand('clear', ['/clear', '/c'], async (context: MessageContext) => {
     peer_id: context.peerId,
     start_message_id: context.id,
   });
-  context.send('♻ Clearing messages');
+  context.send('♻ Clearing messages (last 200 messages)');
 });
 
 // NOTE: full clear for long dialogs past 24 hours
@@ -336,7 +336,7 @@ hearCommand(
       peer_id: context.peerId,
       start_message_id: context.id,
     });
-    context.send('♻ Full clearing messages');
+    context.send('♻ Full clearing messages (all messages)');
   },
 );
 
