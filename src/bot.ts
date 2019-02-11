@@ -3,6 +3,7 @@ import { VK, MessageContext, Context, AudioAttachment } from 'vk-io';
 import * as rp from 'request-promise';
 import * as cheerio from 'cheerio';
 import sharp from 'sharp';
+import { merge } from 'image-glue';
 import ms from 'ms';
 import * as fs from 'fs';
 import { getRandomInt } from './utils';
@@ -88,6 +89,20 @@ hearCommand('alive', ['/alive'], (context: any) => {
   context.sendSticker(9046);
 });
 
+hearCommand('help', ['/help'], (context: any) => {
+  context.send(`
+    📋 List of available commands:
+    ➡ /help - Show available commands
+    ➡ /alive - Check bot status
+    ➡ /tt - Give available time table
+    ➡ /cs1 - Give call schedule for first block
+    ➡ /cs2 - Give call schedule for second block
+    ➡ /fact - Give random fact from list
+    ➡ /hook - Hook random chat user (Admin permissions only)
+    ➡ /vika - Command for fun
+  `);
+});
+
 hearCommand(
   'timetable',
   ['/tt', '/timetable', '/raspisanie', '/rasp', '/расписание', '/расп'],
@@ -103,9 +118,7 @@ hearCommand(
       .attr('src');
 
     // Get image
-    const imgBuffer = await rp.get(imageUrl, {
-      encoding: null,
-    });
+    const imgBuffer = await getRawImage(imageUrl);
 
     // Load to sharp
     const sharpImg = sharp(imgBuffer);
@@ -135,21 +148,18 @@ hearCommand(
 );
 
 hearCommand('callSchedule1', ['/cs1', '/call1'], async (context: any) => {
-  const imageUrlTuesday = `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_1_2.png`;
-  const imageUrlOther = `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_1_1.png`;
-  const currentDay = new Date().getDay();
-
   // Get image
-  const imgBuffer = await rp.get(
-    currentDay === 2 ? imageUrlTuesday : imageUrlOther,
-    {
-      encoding: null,
-    },
-  );
+  const [imgBufferTuesday, imgBufferOther] = await Promise.all([
+    getRawImage(`${ENDPOINT}/wp-content/themes/politeh/image/Korpus_1_2.png`),
+    getRawImage(`${ENDPOINT}/wp-content/themes/politeh/image/Korpus_1_1.png`),
+  ]);
+
+  // Combine images
+  const combinedImg = await merge([imgBufferOther, imgBufferTuesday]);
 
   // Attach photo
   const attachmentPhoto = await vk.upload.messagePhoto({
-    source: imgBuffer,
+    source: combinedImg,
   });
 
   // Send message
@@ -158,33 +168,26 @@ hearCommand('callSchedule1', ['/cs1', '/call1'], async (context: any) => {
   });
 });
 
-hearCommand(
-  'callSchedule2',
-  ['/cs2', '/call2'],
-  async (context: MessageContext) => {
-    const imageUrlTuesday = `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_2.png`;
-    const imageUrlOther = `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_1.png`;
-    const currentDay = new Date().getDay();
+hearCommand('callSchedule1', ['/cs2', '/call2'], async (context: any) => {
+  // Get image
+  const [imgBufferTuesday, imgBufferOther] = await Promise.all([
+    getRawImage(`${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_2.png`),
+    getRawImage(`${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_1.png`),
+  ]);
 
-    // Get image
-    const imgBuffer = await rp.get(
-      currentDay === 2 ? imageUrlTuesday : imageUrlOther,
-      {
-        encoding: null,
-      },
-    );
+  // Combine images
+  const combinedImg = await merge([imgBufferOther, imgBufferTuesday]);
 
-    // Attach photo
-    const attachmentPhoto = await vk.upload.messagePhoto({
-      source: imgBuffer,
-    });
+  // Attach photo
+  const attachmentPhoto = await vk.upload.messagePhoto({
+    source: combinedImg,
+  });
 
-    // Send message
-    context.send({
-      attachment: attachmentPhoto.toString(),
-    });
-  },
-);
+  // Send message
+  context.send({
+    attachment: attachmentPhoto,
+  });
+});
 
 hearCommand('hook', ['/hook', '/h'], async (context: MessageContext) => {
   const members = await vk.api.messages.getConversationMembers({
@@ -238,13 +241,10 @@ hearCommand('vika', ['/vika', '/roflan'], async (context: MessageContext) => {
   vikaTimeout = Date.now() + ms('2h');
 
   // Get image
-  const imgBuffer = await rp.get(
+  const imgBuffer = await getRawImage(
     `https://static-cdn.jtvnw.net/emoticons/v1/${
       emotesIds[getRandomInt(0, emotesIds.length)]
     }/3.0`,
-    {
-      encoding: null,
-    },
   );
 
   // Attach photo
@@ -273,6 +273,12 @@ hearCommand('fact', ['/fact', '/f'], async (context: MessageContext) => {
   // Send message
   context.send(randomFact);
 });
+
+function getRawImage(url) {
+  return rp.get(url, {
+    encoding: null,
+  });
+}
 
 async function run() {
   if (process.env.UPDATES === 'webhook') {
