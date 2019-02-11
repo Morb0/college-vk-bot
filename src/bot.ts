@@ -277,7 +277,9 @@ hearCommand('vika', ['/vika', '/roflan'], async (context: MessageContext) => {
 
     if (Date.now() < vikaTimeout) {
       context.send(
-        `Arthas takes out the fucking trash (${ms(vikaTimeout - Date.now())})`,
+        `⌛ Arthas takes out the f**king trash (${ms(
+          vikaTimeout - Date.now(),
+        )})`,
       );
       return;
     }
