@@ -326,20 +326,16 @@ hearCommand('vika', ['/vika', '/roflan'], async (context: MessageContext) => {
 hearCommand('fact', ['/fact', '/f'], async (context: MessageContext) => {
   const factsUrl = 'https://randstuff.ru/fact/generate';
   try {
-    const randomFact = await rp.post(factsUrl, {
+    const randomFact = await rp.get(factsUrl, {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
       },
+      json: true,
     });
 
     // Send message
-    context.send(randomFact.body.fact.text);
+    context.send(randomFact.fact.text);
   } catch (err) {
-    if (err.statusCode === 302) {
-      // Skip error
-      return;
-    }
-
     console.error(err);
     context.send(
       '❌ An unknown error occurred while trying to execute a command',
