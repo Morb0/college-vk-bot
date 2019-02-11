@@ -88,6 +88,7 @@ hearCommand('alive', ['/alive'], (context: any) => {
   try {
     context.sendSticker(9046);
   } catch (err) {
+    console.error(err);
     context.send(
       '❌ An unknown error occurred while trying to execute a command',
     );
@@ -108,6 +109,7 @@ hearCommand('help', ['/help'], (context: any) => {
       ➡ /vika - Command for fun
     `);
   } catch (err) {
+    console.error(err);
     context.send(
       '❌ An unknown error occurred while trying to execute a command',
     );
@@ -157,6 +159,7 @@ hearCommand(
         attachment: attachmentPhoto,
       });
     } catch (err) {
+      console.error(err);
       context.send(
         '❌ An unknown error occurred while trying to execute a command',
       );
@@ -185,6 +188,7 @@ hearCommand('callSchedule1', ['/cs1', '/call1'], async (context: any) => {
       attachment: attachmentPhoto,
     });
   } catch (err) {
+    console.error(err);
     context.send(
       '❌ An unknown error occurred while trying to execute a command',
     );
@@ -212,6 +216,7 @@ hearCommand('callSchedule1', ['/cs2', '/call2'], async (context: any) => {
       attachment: attachmentPhoto,
     });
   } catch (err) {
+    console.error(err);
     context.send(
       '❌ An unknown error occurred while trying to execute a command',
     );
@@ -237,6 +242,7 @@ hearCommand('hook', ['/hook', '/h'], async (context: MessageContext) => {
     if (err.code === 917) {
       context.send('❌ To use this command, bot requires admin rights');
     } else {
+      console.error(err);
       context.send(
         '❌ An unknown error occurred while trying to execute a command',
       );
@@ -310,6 +316,7 @@ hearCommand('vika', ['/vika', '/roflan'], async (context: MessageContext) => {
       attachment: [attachmentAudio.toString(), attachmentPhoto.toString()],
     });
   } catch (err) {
+    console.error(err);
     context.send(
       '❌ An unknown error occurred while trying to execute a command',
     );
@@ -333,6 +340,7 @@ hearCommand('fact', ['/fact', '/f'], async (context: MessageContext) => {
       return;
     }
 
+    console.error(err);
     context.send(
       '❌ An unknown error occurred while trying to execute a command',
     );
