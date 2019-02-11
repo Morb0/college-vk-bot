@@ -7,7 +7,6 @@ import { merge } from 'image-glue';
 import ms from 'ms';
 import * as fs from 'fs';
 import { getRandomInt } from './utils';
-const facts = require('../data/facts.json');
 const peerIds = require('../peerIds.json');
 
 dotenv.config();
@@ -318,12 +317,22 @@ hearCommand('vika', ['/vika', '/roflan'], async (context: MessageContext) => {
 });
 
 hearCommand('fact', ['/fact', '/f'], async (context: MessageContext) => {
+  const factsUrl = 'https://randstuff.ru/fact/generate';
   try {
-    const randomFact = facts[getRandomInt(0, facts.length)];
+    const randomFact = await rp.post(factsUrl, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+    });
 
     // Send message
-    context.send(randomFact);
+    context.send(randomFact.body.fact.text);
   } catch (err) {
+    if (err.statusCode === 302) {
+      // Skip error
+      return;
+    }
+
     context.send(
       '❌ An unknown error occurred while trying to execute a command',
     );
