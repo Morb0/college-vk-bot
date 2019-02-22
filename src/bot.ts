@@ -123,6 +123,7 @@ hearCommand(
     try {
       // Get image url
       const $ = await rp.get(`${ENDPOINT}/raspisanie`, {
+        timeout: 5000,
         transform: (body: string) => cheerio.load(body),
       });
 
@@ -345,6 +346,7 @@ hearCommand('fact', ['/fact', '/f'], async (context: MessageContext) => {
 
 function getRawImage(url) {
   return rp.get(url, {
+    timeout: 5000,
     encoding: null,
   });
 }
