@@ -1,17 +1,22 @@
-import * as dotenv from 'dotenv';
-import { VK, MessageContext, Context, AudioAttachment } from 'vk-io';
-import * as rp from 'request-promise';
 import * as cheerio from 'cheerio';
-import sharp from 'sharp';
+import * as dotenv from 'dotenv';
+import * as fs from 'fs';
+// Web server
+import * as http from 'http';
 import { merge } from 'image-glue';
 import ms from 'ms';
-import * as fs from 'fs';
+import * as rp from 'request-promise';
+import sharp from 'sharp';
+import { AudioAttachment, Context, MessageContext, VK } from 'vk-io';
+
 import { getRandomInt } from './utils';
+
 const peerIds = require('../peerIds.json');
 
 dotenv.config();
 
 const ENDPOINT = 'http://simfpolyteh.ru';
+const BPC_COOKIE = '4cbcc0118e05c8e02b867b1158bc4c02';
 
 const vk = new VK();
 
@@ -125,6 +130,9 @@ hearCommand(
       const $ = await rp.get(`${ENDPOINT}/raspisanie`, {
         timeout: 5000,
         transform: (body: string) => cheerio.load(body),
+        headers: {
+          Cookie: `bpc=${BPC_COOKIE}`,
+        },
       });
 
       const imageUrl = $('.page_raspis_block_img')
@@ -348,6 +356,9 @@ function getRawImage(url) {
   return rp.get(url, {
     timeout: 5000,
     encoding: null,
+    headers: {
+      Cookie: `bpc=${BPC_COOKIE}`,
+    },
   });
 }
 
@@ -367,8 +378,6 @@ async function run() {
 
 run().catch(console.error);
 
-// Web server
-import * as http from 'http';
 const server = http.createServer((req, res) => res.end('Bot work'));
 server.listen(process.env.PORT || 3000);
 
