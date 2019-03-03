@@ -1,7 +1,5 @@
 import * as cheerio from 'cheerio';
 import * as dotenv from 'dotenv';
-import * as fs from 'fs';
-// Web server
 import * as http from 'http';
 import { merge } from 'image-glue';
 import ms from 'ms';
@@ -10,8 +8,6 @@ import sharp from 'sharp';
 import { AudioAttachment, Context, MessageContext, VK } from 'vk-io';
 
 import { getRandomInt } from './utils';
-
-const peerIds = require('../peerIds.json');
 
 dotenv.config();
 
@@ -41,24 +37,6 @@ vk.updates.use(
     } catch (error) {
       console.error('Error:', error);
     }
-  },
-);
-
-// Handle dialogs when bot used
-vk.updates.use(
-  async (
-    context: Context | MessageContext,
-    next: (...args: any[]) => any,
-  ): Promise<void> => {
-    if (context.is(['message'])) {
-      const { peerId } = context;
-      if (peerIds.indexOf(peerId) === -1) {
-        peerIds.push(peerId);
-        fs.writeFileSync('./peerIds.json', JSON.stringify(peerIds));
-      }
-    }
-
-    await next();
   },
 );
 
