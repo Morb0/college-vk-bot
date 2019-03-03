@@ -12,9 +12,12 @@ import { getRandomInt } from './utils';
 dotenv.config();
 
 const ENDPOINT = 'http://simfpolyteh.ru';
-const BPC_COOKIE = '4cbcc0118e05c8e02b867b1158bc4c02';
 
 const vk = new VK();
+
+// Anti DDos bypass
+let bpcCookie; // Nice try :3
+getBPCCookie();
 
 // Setup token
 vk.setOptions({
@@ -109,7 +112,7 @@ hearCommand(
         timeout: 5000,
         transform: (body: string) => cheerio.load(body),
         headers: {
-          Cookie: `bpc=${BPC_COOKIE}`,
+          Cookie: `bpc=${bpcCookie}`,
         },
       });
 
@@ -335,9 +338,20 @@ function getRawImage(url) {
     timeout: 5000,
     encoding: null,
     headers: {
-      Cookie: `bpc=${BPC_COOKIE}`,
+      Cookie: `bpc=${bpcCookie}`,
     },
   });
+}
+
+async function getBPCCookie() {
+  const body = await rp.get(ENDPOINT, {
+    timeout: 5000,
+  });
+  bpcCookie = body.match(/bpc=([^<]+);Path/)[1];
+  if (!bpcCookie) {
+    throw new Error('Error receiving bpc cookie value');
+  }
+  console.log(`Success received bpc cookie: ${bpcCookie}`);
 }
 
 async function run() {
