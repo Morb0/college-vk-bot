@@ -6,6 +6,7 @@ import { resolve } from 'path';
 import { MessageContext, VK } from 'vk-io';
 
 import { Command } from './interfaces/command.interface';
+import { t } from './translate';
 
 const vk = new VK();
 
@@ -80,12 +81,10 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
           await command.handler(context, vk);
         } catch (err) {
           if (err.code === 917) {
-            context.send('❌ To use this command, bot requires admin rights');
+            context.send(`❌ ${t('ADMIN_PERMISSION_REQUIRED')}`);
           } else {
             console.error(err);
-            context.send(
-              '❌ An unknown error occurred while trying to execute a command',
-            );
+            context.send(`❌ ${t('UNKNOWN_ERROR')}`);
           }
         }
       },

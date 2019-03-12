@@ -2,6 +2,7 @@ import ms from 'ms';
 import VK, { AudioAttachment, MessageContext } from 'vk-io';
 
 import { Command } from '../interfaces/command.interface';
+import { t } from '../translate';
 import { getRandomInt, getRawImage } from '../utils';
 
 let timeout;
@@ -34,9 +35,7 @@ const handler = async (context: MessageContext, vk: VK) => {
   ];
 
   if (Date.now() < timeout) {
-    context.send(
-      `⌛ Arthas takes out the f**king trash (${ms(timeout - Date.now())})`,
-    );
+    context.send(`⌛ ${t('VIKA_TIMEOUT')} (${ms(timeout - Date.now())})`);
     return;
   }
   timeout = Date.now() + ms('2h');
