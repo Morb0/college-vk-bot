@@ -1,10 +1,10 @@
-import * as ms from 'ms';
+import ms from 'ms';
 import VK, { AudioAttachment, MessageContext } from 'vk-io';
 
 import { Command } from '../interfaces/command.interface';
 import { getRandomInt, getRawImage } from '../utils';
 
-let vikaTimeout;
+let timeout;
 const handler = async (context: MessageContext, vk: VK) => {
   const emotesIds = [
     1001738,
@@ -33,13 +33,13 @@ const handler = async (context: MessageContext, vk: VK) => {
     1228008,
   ];
 
-  if (Date.now() < vikaTimeout) {
+  if (Date.now() < timeout) {
     context.send(
-      `⌛ Arthas takes out the f**king trash (${ms(vikaTimeout - Date.now())})`,
+      `⌛ Arthas takes out the f**king trash (${ms(timeout - Date.now())})`,
     );
     return;
   }
-  vikaTimeout = Date.now() + ms('2h');
+  timeout = Date.now() + ms('2h');
 
   // Get image
   const imgBuffer = await getRawImage(

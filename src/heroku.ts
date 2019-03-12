@@ -1,5 +1,5 @@
 import * as http from 'http';
-import * as ms from 'ms';
+import ms from 'ms';
 import * as rp from 'request-promise';
 
 const server = http.createServer((req, res) => res.end('OK'));
