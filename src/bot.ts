@@ -1,5 +1,6 @@
+import 'dotenv/config';
+
 import * as cheerio from 'cheerio';
-import * as dotenv from 'dotenv';
 import * as http from 'http';
 import { merge } from 'image-glue';
 import ms from 'ms';
@@ -9,36 +10,36 @@ import { AudioAttachment, Context, MessageContext, VK } from 'vk-io';
 
 import { getRandomInt } from './utils';
 
-dotenv.config();
-
 const ENDPOINT = 'http://simfpolyteh.ru';
 
 const vk = new VK();
 
 // Anti DDos bypass
-let bpcCookie; // Nice try :3
+let bpcCookie;
 getBPCCookie();
 
 // Setup token
 vk.setOptions({
   token: process.env.VK_TOKEN,
-  pollingGroupId: +process.env.GROUP_ID,
 });
 
+const { updates } = vk;
+
 // Skip outbox message and handle errors
-vk.updates.use(
+updates.use(
   async (
     context: Context | MessageContext,
     next: (...args: any[]) => any,
   ): Promise<void> => {
+    // Skip sent message by self
     if (context.is(['message']) && context.isOutbox) {
       return;
     }
 
     try {
       await next();
-    } catch (error) {
-      console.error('Error:', error);
+    } catch (err) {
+      console.error('Error:', err);
     }
   },
 );
@@ -46,11 +47,11 @@ vk.updates.use(
 const hearCommand = (
   name: string,
   conditions: string[],
-  handle: (context: any) => any,
+  handle: (context: Context | MessageContext) => any,
 ): void => {
-  console.log(`Bot register commands: ${conditions.join(', ')}`);
+  console.log(`Register commands: ${conditions.join(', ')}`);
 
-  vk.updates.hear(
+  updates.hear(
     [
       (text: string) => {
         if (/[club\d+\|?.+\] \/[a-zA-Z0-9А-Яа-я]+/.test(text)) {
@@ -70,7 +71,7 @@ const hearCommand = (
   );
 };
 
-hearCommand('alive', ['/alive'], (context: any) => {
+hearCommand('alive', ['/alive'], (context: Context | MessageContext) => {
   try {
     context.sendSticker(9046);
   } catch (err) {
@@ -81,7 +82,7 @@ hearCommand('alive', ['/alive'], (context: any) => {
   }
 });
 
-hearCommand('help', ['/help'], (context: any) => {
+hearCommand('help', ['/help'], (context: Context | MessageContext) => {
   try {
     context.send(`
       📋 List of available commands:
@@ -105,7 +106,7 @@ hearCommand('help', ['/help'], (context: any) => {
 hearCommand(
   'timetable',
   ['/tt', '/timetable', '/raspisanie', '/rasp', '/расписание', '/расп'],
-  async (context: any) => {
+  async (context: Context | MessageContext) => {
     try {
       // Get image url
       const $ = await rp.get(`${ENDPOINT}/raspisanie`, {
@@ -157,181 +158,209 @@ hearCommand(
   },
 );
 
-hearCommand('callSchedule1', ['/cs1', '/call1'], async (context: any) => {
-  try {
-    // Get image
-    const [imgBufferTuesday, imgBufferOther] = await Promise.all([
-      getRawImage(`${ENDPOINT}/wp-content/themes/politeh/image/Korpus_1_2.png`),
-      getRawImage(`${ENDPOINT}/wp-content/themes/politeh/image/Korpus_1_1.png`),
-    ]);
+hearCommand(
+  'callSchedule1',
+  ['/cs1', '/call1'],
+  async (context: Context | MessageContext) => {
+    try {
+      // Get image
+      const [imgBufferTuesday, imgBufferOther] = await Promise.all([
+        getRawImage(
+          `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_1_2.png`,
+        ),
+        getRawImage(
+          `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_1_1.png`,
+        ),
+      ]);
 
-    // Combine images
-    const combinedImg = await merge([imgBufferOther, imgBufferTuesday]);
+      // Combine images
+      const combinedImg = await merge([imgBufferOther, imgBufferTuesday]);
 
-    // Attach photo
-    const attachmentPhoto = await vk.upload.messagePhoto({
-      source: combinedImg,
-    });
+      // Attach photo
+      const attachmentPhoto = await vk.upload.messagePhoto({
+        source: combinedImg,
+      });
 
-    // Send message
-    context.send({
-      attachment: attachmentPhoto,
-    });
-  } catch (err) {
-    console.error(err);
-    context.send(
-      '❌ An unknown error occurred while trying to execute a command',
-    );
-  }
-});
-
-hearCommand('callSchedule1', ['/cs2', '/call2'], async (context: any) => {
-  try {
-    // Get image
-    const [imgBufferTuesday, imgBufferOther] = await Promise.all([
-      getRawImage(`${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_2.png`),
-      getRawImage(`${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_1.png`),
-    ]);
-
-    // Combine images
-    const combinedImg = await merge([imgBufferOther, imgBufferTuesday]);
-
-    // Attach photo
-    const attachmentPhoto = await vk.upload.messagePhoto({
-      source: combinedImg,
-    });
-
-    // Send message
-    context.send({
-      attachment: attachmentPhoto,
-    });
-  } catch (err) {
-    console.error(err);
-    context.send(
-      '❌ An unknown error occurred while trying to execute a command',
-    );
-  }
-});
-
-hearCommand('hook', ['/hook', '/h'], async (context: MessageContext) => {
-  try {
-    const members = await vk.api.messages.getConversationMembers({
-      peer_id: context.peerId,
-    });
-
-    // Get random profile
-    const randomProfile =
-      members.profiles[getRandomInt(0, members.profiles.length)];
-
-    context.send(
-      `🎣 Get over here - ${randomProfile.first_name} ${
-        randomProfile.last_name
-      }`,
-    );
-  } catch (err) {
-    if (err.code === 917) {
-      context.send('❌ To use this command, bot requires admin rights');
-    } else {
+      // Send message
+      context.send({
+        attachment: attachmentPhoto,
+      });
+    } catch (err) {
       console.error(err);
       context.send(
         '❌ An unknown error occurred while trying to execute a command',
       );
     }
-  }
-});
+  },
+);
+
+hearCommand(
+  'callSchedule1',
+  ['/cs2', '/call2'],
+  async (context: Context | MessageContext) => {
+    try {
+      // Get image
+      const [imgBufferTuesday, imgBufferOther] = await Promise.all([
+        getRawImage(
+          `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_2.png`,
+        ),
+        getRawImage(
+          `${ENDPOINT}/wp-content/themes/politeh/image/Korpus_2_1.png`,
+        ),
+      ]);
+
+      // Combine images
+      const combinedImg = await merge([imgBufferOther, imgBufferTuesday]);
+
+      // Attach photo
+      const attachmentPhoto = await vk.upload.messagePhoto({
+        source: combinedImg,
+      });
+
+      // Send message
+      context.send({
+        attachment: attachmentPhoto,
+      });
+    } catch (err) {
+      console.error(err);
+      context.send(
+        '❌ An unknown error occurred while trying to execute a command',
+      );
+    }
+  },
+);
+
+hearCommand(
+  'hook',
+  ['/hook', '/h'],
+  async (context: Context | MessageContext) => {
+    try {
+      const members = await vk.api.messages.getConversationMembers({
+        peer_id: context.peerId,
+      });
+
+      // Get random profile
+      const randomProfile =
+        members.profiles[getRandomInt(0, members.profiles.length)];
+
+      context.send(
+        `🎣 Get over here - ${randomProfile.first_name} ${
+          randomProfile.last_name
+        }`,
+      );
+    } catch (err) {
+      if (err.code === 917) {
+        context.send('❌ To use this command, bot requires admin rights');
+      } else {
+        console.error(err);
+        context.send(
+          '❌ An unknown error occurred while trying to execute a command',
+        );
+      }
+    }
+  },
+);
 
 let vikaTimeout;
-hearCommand('vika', ['/vika', '/roflan'], async (context: MessageContext) => {
-  try {
-    const emotesIds = [
-      1001738,
-      150380,
-      958403,
-      90896,
-      117708,
-      1678208,
-      41135,
-      118081,
-      975930,
-      1844320,
-      1722639,
-      59918,
-      1388990,
-      1381423,
-      771070,
-      1201063,
-      669957,
-      181421,
-      43996,
-      117092,
-      117709,
-      332579,
-      1191320,
-      1228008,
-    ];
+hearCommand(
+  'vika',
+  ['/vika', '/roflan'],
+  async (context: Context | MessageContext) => {
+    try {
+      const emotesIds = [
+        1001738,
+        150380,
+        958403,
+        90896,
+        117708,
+        1678208,
+        41135,
+        118081,
+        975930,
+        1844320,
+        1722639,
+        59918,
+        1388990,
+        1381423,
+        771070,
+        1201063,
+        669957,
+        181421,
+        43996,
+        117092,
+        117709,
+        332579,
+        1191320,
+        1228008,
+      ];
 
-    if (Date.now() < vikaTimeout) {
-      context.send(
-        `⌛ Arthas takes out the f**king trash (${ms(
-          vikaTimeout - Date.now(),
-        )})`,
+      if (Date.now() < vikaTimeout) {
+        context.send(
+          `⌛ Arthas takes out the f**king trash (${ms(
+            vikaTimeout - Date.now(),
+          )})`,
+        );
+        return;
+      }
+      vikaTimeout = Date.now() + ms('2h');
+
+      // Get image
+      const imgBuffer = await getRawImage(
+        `https://static-cdn.jtvnw.net/emoticons/v1/${
+          emotesIds[getRandomInt(0, emotesIds.length)]
+        }/3.0`,
       );
-      return;
+
+      // Attach photo
+      const attachmentPhoto = await vk.upload.messagePhoto({
+        source: imgBuffer,
+      });
+
+      // Attach audio
+      const attachmentAudio = new AudioAttachment(
+        {
+          id: 456239689,
+          owner_id: 2000421094,
+        },
+        vk,
+      );
+
+      // Send message
+      context.send({
+        attachment: [attachmentAudio.toString(), attachmentPhoto.toString()],
+      });
+    } catch (err) {
+      console.error(err);
+      context.send(
+        '❌ An unknown error occurred while trying to execute a command',
+      );
     }
-    vikaTimeout = Date.now() + ms('2h');
+  },
+);
 
-    // Get image
-    const imgBuffer = await getRawImage(
-      `https://static-cdn.jtvnw.net/emoticons/v1/${
-        emotesIds[getRandomInt(0, emotesIds.length)]
-      }/3.0`,
-    );
+hearCommand(
+  'fact',
+  ['/fact', '/f'],
+  async (context: Context | MessageContext) => {
+    const factsUrl = 'https://randstuff.ru/fact/generate';
+    try {
+      const randomFact = await rp.get(factsUrl, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        json: true,
+      });
 
-    // Attach photo
-    const attachmentPhoto = await vk.upload.messagePhoto({
-      source: imgBuffer,
-    });
-
-    // Attach audio
-    const attachmentAudio = new AudioAttachment(
-      {
-        id: 456239689,
-        owner_id: 2000421094,
-      },
-      vk,
-    );
-
-    // Send message
-    context.send({
-      attachment: [attachmentAudio.toString(), attachmentPhoto.toString()],
-    });
-  } catch (err) {
-    console.error(err);
-    context.send(
-      '❌ An unknown error occurred while trying to execute a command',
-    );
-  }
-});
-
-hearCommand('fact', ['/fact', '/f'], async (context: MessageContext) => {
-  const factsUrl = 'https://randstuff.ru/fact/generate';
-  try {
-    const randomFact = await rp.get(factsUrl, {
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      json: true,
-    });
-
-    // Send message
-    context.send(randomFact.fact.text);
-  } catch (err) {
-    console.error(err);
-    context.send(
-      '❌ An unknown error occurred while trying to execute a command',
-    );
-  }
-});
+      // Send message
+      context.send(randomFact.fact.text);
+    } catch (err) {
+      console.error(err);
+      context.send(
+        '❌ An unknown error occurred while trying to execute a command',
+      );
+    }
+  },
+);
 
 function getRawImage(url) {
   return rp.get(url, {
@@ -356,13 +385,13 @@ async function getBPCCookie() {
 
 async function run() {
   if (process.env.UPDATES === 'webhook') {
-    await vk.updates.startWebhook({
+    await updates.startWebhook({
       tls: null,
     });
 
     console.log('Webhook server started');
   } else {
-    await vk.updates.startPolling();
+    await updates.startPolling();
 
     console.log('Polling started');
   }
