@@ -1,10 +1,19 @@
+import ms from 'ms';
 import sharp from 'sharp';
 import { MessageContext } from 'vk-io';
 
 import { Command } from '../interfaces/command.interface';
 import { getCheerioContent, getRawImage } from '../utils';
 
+let timeout;
 const handler = async (context: MessageContext) => {
+  // Timeout check
+  if (Date.now() < timeout) {
+    context.send(`⌛ Timetable in timeout (${ms(timeout - Date.now())})`);
+    return;
+  }
+  timeout = Date.now() + ms('1m');
+
   // Get image url
   const $ = await getCheerioContent('http://simfpolyteh.ru/raspisanie');
 
