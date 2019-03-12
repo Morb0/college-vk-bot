@@ -1,9 +1,8 @@
 import 'dotenv/config';
+import './heroku';
 
 import { readdirSync } from 'fs';
-import * as http from 'http';
 import { resolve } from 'path';
-import * as rp from 'request-promise';
 import { MessageContext, VK } from 'vk-io';
 
 import { Command } from './interfaces/command.interface';
@@ -112,15 +111,3 @@ async function run() {
 }
 
 run().catch(console.error);
-
-const server = http.createServer((req, res) => res.end('Bot work'));
-server.listen(process.env.PORT || 3000);
-
-// Anti server sleep
-(async function wakeUp() {
-  await rp.get(process.env.HEROKU_APP_URL, err => {
-    if (err) throw err;
-    console.log('Woke up!');
-    setTimeout(wakeUp, 15 * (60 * 1000)); // 15m
-  });
-})();
