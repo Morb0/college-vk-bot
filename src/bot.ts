@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import './heroku';
+import './db';
 
 import { readdirSync } from 'fs';
 import { resolve } from 'path';
