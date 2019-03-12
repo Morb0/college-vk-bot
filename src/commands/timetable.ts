@@ -3,13 +3,14 @@ import sharp from 'sharp';
 import { MessageContext } from 'vk-io';
 
 import { Command } from '../interfaces/command.interface';
+import { t } from '../translate';
 import { getCheerioContent, getRawImage } from '../utils';
 
 let timeout;
 const handler = async (context: MessageContext) => {
   // Timeout check
   if (Date.now() < timeout) {
-    context.send(`⌛ Timetable in timeout (${ms(timeout - Date.now())})`);
+    context.send(`⌛ ${t('TIMETABLE_TIMEOUT')} (${ms(timeout - Date.now())})`);
     return;
   }
   timeout = Date.now() + ms('1m');
