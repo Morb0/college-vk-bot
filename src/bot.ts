@@ -108,8 +108,11 @@ const hearCommand = (
     (context: MessageContext) => {
       // Maintenance
       if (process.env.MAINTENANCE) {
-        context.send(`🚧 ${t('MAINTENANCE')}`);
-        return;
+        const devPeerIds = process.env.DEV_PEER_IDS.split(',');
+        if (devPeerIds.indexOf(context.peerId.toString()) === -1) {
+          context.send(`🚧 ${t('MAINTENANCE')}`);
+          return;
+        }
       }
 
       handle(context);
