@@ -26,7 +26,7 @@ const handler = async (context: MessageContext) => {
     } ${t('EXP')}`;
   }
 
-  context.send(`ℹ ${t('MY_RANK')} ${curRank.name}\n ${rankUpRemainText}`);
+  context.reply(`ℹ ${t('MY_RANK')} ${curRank.name}\n ${rankUpRemainText}`);
 };
 
 const command: Command = {

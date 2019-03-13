@@ -1,13 +1,13 @@
 import ms from 'ms';
 import sharp from 'sharp';
-import { MessageContext } from 'vk-io';
+import VK, { MessageContext } from 'vk-io';
 
 import { Command } from '../interfaces/command';
 import { t } from '../translate';
 import { getCheerioContent, getRawImage } from '../utils';
 
 const timeouts = {};
-const handler = async (context: MessageContext) => {
+const handler = async (context: MessageContext, vk: VK) => {
   // Timeout check
   if (Date.now() < timeouts[context.peerId]) {
     context.send(
@@ -47,7 +47,14 @@ const handler = async (context: MessageContext) => {
     .resize(258, 354) // Resize x2
     .toBuffer();
 
-  context.sendPhoto(modifiedImgBuffer);
+  // Send message
+  const attachmentPhoto = await vk.upload.messagePhoto({
+    source: modifiedImgBuffer,
+  });
+
+  context.reply({
+    attachment: attachmentPhoto.toString(),
+  });
 };
 
 const command: Command = {
