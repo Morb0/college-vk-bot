@@ -5,7 +5,7 @@ import { Rank } from '../interfaces/rank';
 import { RankModel } from '../models/rank';
 import { UserModel } from '../models/user';
 import { t } from '../translate';
-import { findRank } from '../utils';
+import { createMention, findRank } from '../utils';
 
 const calcExp = (context: MessageContext): number => {
   let expCount = 1;
@@ -33,7 +33,8 @@ const checkNewRank = async (
   const newRank = findRank(foundRanks, foundUser.exp + expCount);
 
   if (curRank._id !== newRank._id) {
-    context.send(`🎉 ${t('RANK_UP')}: ${newRank.name}`);
+    const mention = createMention(context.senderId, foundUser.firstName);
+    context.send(`${mention}, 🎉 ${t('RANK_UP')}: ${newRank.name}`);
   }
 };
 

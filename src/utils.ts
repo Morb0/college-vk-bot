@@ -46,3 +46,7 @@ export const findRank = (ranks: Rank[], exp: number): Rank => {
     .reverse()
     .find(r => exp >= r.exp);
 };
+
+export const createMention = (id: number, firstName: string): string => {
+  return `@id${id} (${firstName})`;
+};
