@@ -1,3 +1,4 @@
+import config from 'config';
 import ms from 'ms';
 import { MessageContext } from 'vk-io';
 
@@ -30,11 +31,14 @@ export const antiSpam = async (context: MessageContext): Promise<void> => {
       // Penalize for spam
       const foundUser = await UserModel.findOne({ id: context.senderId });
 
-      if (foundUser.exp >= 20) {
-        context.send(`🚨 ${t('SPAM_PENALIZE')}: 20 ${t('EXP')}`);
+      const penalizeExpCount = config.get('spamExpPenalize');
+      if (foundUser.exp >= penalizeExpCount) {
+        context.send(
+          `🚨 ${t('SPAM_PENALIZE')}: ${penalizeExpCount} ${t('EXP')}`,
+        );
         await UserModel.findByIdAndUpdate(foundUser._id, {
           $inc: {
-            exp: -20,
+            exp: -penalizeExpCount,
           },
         });
       }

@@ -1,3 +1,4 @@
+import config from 'config';
 import { MessageContext } from 'vk-io';
 
 import { Rank } from '../interfaces/rank';
@@ -9,15 +10,15 @@ import { findRank } from '../utils';
 const calcExp = (context: MessageContext): number => {
   let expCount = 1;
   if (context.is(['gift'])) {
-    expCount += 10;
+    expCount += config.get('exp.gift');
   } else if (context.is(['sticker'])) {
-    expCount += 1;
-  } else if (
-    context.is(['photo']) ||
-    context.is(['video']) ||
-    context.is(['audio'])
-  ) {
-    expCount += 2;
+    expCount += config.get('exp.sticker');
+  } else if (context.is(['photo'])) {
+    expCount += config.get('exp.photo');
+  } else if (context.is(['video'])) {
+    expCount += config.get('exp.video');
+  } else if (context.is(['audio'])) {
+    expCount += config.get('exp.audio');
   }
   return expCount;
 };
