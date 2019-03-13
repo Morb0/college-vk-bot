@@ -7,9 +7,9 @@ import { resolve } from 'path';
 import { MessageContext, VK } from 'vk-io';
 
 import { addExp } from './functions/add-exp';
+import { antiSpam } from './functions/anti-spam';
 import { putUser } from './functions/put-user';
 import { Command } from './interfaces/command';
-import { UserModel } from './models/user';
 import { t } from './translate';
 
 const vk = new VK();
@@ -36,6 +36,9 @@ updates.use(
     try {
       // Put user
       await putUser(context, vk);
+
+      // Anti spam
+      await antiSpam(context);
 
       // Add exp
       await addExp(context);

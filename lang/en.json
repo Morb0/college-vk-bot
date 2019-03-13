@@ -7,9 +7,11 @@
   "MY_RANK": "Your rank:",
   "MAINTENANCE": "Maintenance",
   "RANKS_TITLE": "Ranks list",
-  "EXP": "Experience",
+  "EXP": "Exp",
   "RANK_UP": "You have reached a new rank",
   "RANK_UP_REMAIN": "Before promotion",
   "RANK_MAX": "You have reached max rank",
-  "RANKS_SHOW_DISABLED": "View ranks disabled"
+  "RANKS_SHOW_DISABLED": "View ranks disabled",
+  "SPAM_WARNING": "Please stop spam!",
+  "SPAM_PENALIZE": "You were penalized for spam"
 }
