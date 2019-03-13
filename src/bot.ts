@@ -6,7 +6,7 @@ import { readdirSync } from 'fs';
 import { resolve } from 'path';
 import { MessageContext, VK } from 'vk-io';
 
-import { Command } from './interfaces/command.interface';
+import { Command } from './interfaces/command';
 import { UserModel } from './models/user';
 import { t } from './translate';
 

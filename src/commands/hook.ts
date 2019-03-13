@@ -1,6 +1,6 @@
 import VK, { MessageContext } from 'vk-io';
 
-import { Command } from '../interfaces/command.interface';
+import { Command } from '../interfaces/command';
 import { getRandomInt } from '../utils';
 
 const handler = async (context: MessageContext, vk: VK) => {

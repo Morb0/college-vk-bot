@@ -1,6 +1,6 @@
 import { MessageContext } from 'vk-io';
 
-import { Command } from '../interfaces/command.interface';
+import { Command } from '../interfaces/command';
 
 const handler = (context: MessageContext) => {
   context.sendSticker(9046);

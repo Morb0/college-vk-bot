@@ -1,7 +1,7 @@
 import ms from 'ms';
 import VK, { AudioAttachment, MessageContext } from 'vk-io';
 
-import { Command } from '../interfaces/command.interface';
+import { Command } from '../interfaces/command';
 import { t } from '../translate';
 import { getRandomInt, getRawImage } from '../utils';
 

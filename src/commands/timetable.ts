@@ -2,7 +2,7 @@ import ms from 'ms';
 import sharp from 'sharp';
 import { MessageContext } from 'vk-io';
 
-import { Command } from '../interfaces/command.interface';
+import { Command } from '../interfaces/command';
 import { t } from '../translate';
 import { getCheerioContent, getRawImage } from '../utils';
 

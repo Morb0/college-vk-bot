@@ -1,6 +1,6 @@
 import { MessageContext } from 'vk-io';
 
-import { Command } from '../interfaces/command.interface';
+import { Command } from '../interfaces/command';
 import { t } from '../translate';
 
 const handler = (context: MessageContext) => {
