@@ -12,7 +12,7 @@ const handler = async (context: MessageContext) => {
   }
 
   const ranksList = foundRanks
-    .map(r => `➡ ${r.name} - ${r.exp} ${t('EXP')}`)
+    .map(r => `▶ ${r.name} - ${r.exp} ${t('EXP')}`)
     .join('\n');
   context.send(`📋 ${t('RANKS_TITLE')}:\n${ranksList}`);
 };

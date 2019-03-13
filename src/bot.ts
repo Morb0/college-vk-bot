@@ -6,6 +6,8 @@ import { readdirSync } from 'fs';
 import { resolve } from 'path';
 import { MessageContext, VK } from 'vk-io';
 
+import { addExp } from './functions/add-exp';
+import { putUser } from './functions/put-user';
 import { Command } from './interfaces/command';
 import { UserModel } from './models/user';
 import { t } from './translate';
@@ -32,47 +34,11 @@ updates.use(
     }
 
     try {
-      // Add or update user
-      const receivedUser = await vk.api.users.get({
-        user_ids: context.senderId.toString(),
-        fields: 'first_name,last_name',
-      });
-
-      const foundUser = await UserModel.findOne({ id: context.senderId });
-      if (!foundUser) {
-        // Add new user
-        await UserModel.create({
-          id: context.senderId,
-          firstName: receivedUser[0].first_name,
-          lastName: receivedUser[0].last_name,
-        });
-      } else {
-        // Update exist user
-        await UserModel.findByIdAndUpdate(foundUser._id, {
-          firstName: receivedUser[0].first_name,
-          lastName: receivedUser[0].last_name,
-        });
-      }
+      // Put user
+      await putUser(context, vk);
 
       // Add exp
-      let expCount = 1;
-      if (context.is(['gift'])) {
-        expCount += 10;
-      } else if (context.is(['sticker'])) {
-        expCount += 1;
-      } else if (
-        context.is(['photo']) ||
-        context.is(['video']) ||
-        context.is(['audio'])
-      ) {
-        expCount += 2;
-      }
-
-      await UserModel.findByIdAndUpdate(foundUser._id, {
-        $inc: {
-          exp: expCount,
-        },
-      });
+      await addExp(context);
 
       await next();
     } catch (err) {

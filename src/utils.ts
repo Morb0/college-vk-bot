@@ -2,6 +2,7 @@ import * as cheerio from 'cheerio';
 import * as rp from 'request-promise';
 
 import { AntiDDoS } from './anti-ddos';
+import { Rank } from './interfaces/rank';
 
 export const getRandomInt = (min: number = 1, max: number = 100): number => {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -36,4 +37,12 @@ export const getXHRContent = (url: string) => {
     },
     json: true,
   });
+};
+
+// NOTE: slice() for creating copy of array and dont reverse origin array
+export const findRank = (ranks: Rank[], exp: number): Rank => {
+  return ranks
+    .slice()
+    .reverse()
+    .find(r => exp >= r.exp);
 };
