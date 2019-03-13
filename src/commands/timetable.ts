@@ -6,7 +6,7 @@ import { Command } from '../interfaces/command';
 import { t } from '../translate';
 import { getCheerioContent, getRawImage } from '../utils';
 
-let timeouts = {};
+const timeouts = {};
 const handler = async (context: MessageContext) => {
   // Timeout check
   if (Date.now() < timeouts[context.peerId]) {
