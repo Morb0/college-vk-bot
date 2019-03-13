@@ -11,9 +11,10 @@ const handler = async (context: MessageContext) => {
     throw new Error('No ranks created in db');
   }
 
-  context.send(
-    foundRanks.map(r => `${r.name} - ${r.exp} ${t('EXP')}`).join('\n'),
-  );
+  const ranksList = foundRanks
+    .map(r => `➡ ${r.name} - ${r.exp} ${t('EXP')}`)
+    .join('\n');
+  context.send(`📋 ${t('RANKS_TITLE')}:\n${ranksList}`);
 };
 
 const command: Command = {
