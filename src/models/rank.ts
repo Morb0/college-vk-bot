@@ -5,4 +5,4 @@ const RankSchema = new Schema({
   exp: Number,
 });
 
-export default model('Rank', RankSchema);
+export const RankModel = model('Rank', RankSchema);
