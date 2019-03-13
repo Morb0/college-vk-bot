@@ -104,7 +104,16 @@ const hearCommand = (
       },
       ...conditions,
     ],
-    handle,
+    // Middlewares
+    (context: MessageContext) => {
+      // Maintenance
+      if (process.env.MAINTENANCE) {
+        context.send(`🚧 ${t('MAINTENANCE')}`);
+        return;
+      }
+
+      handle(context);
+    },
   );
 };
 
