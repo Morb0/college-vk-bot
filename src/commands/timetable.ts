@@ -6,14 +6,18 @@ import { Command } from '../interfaces/command.interface';
 import { t } from '../translate';
 import { getCheerioContent, getRawImage } from '../utils';
 
-let timeout;
+let timeouts = {};
 const handler = async (context: MessageContext) => {
   // Timeout check
-  if (Date.now() < timeout) {
-    context.send(`⌛ ${t('TIMETABLE_TIMEOUT')} (${ms(timeout - Date.now())})`);
+  if (Date.now() < timeouts[context.peerId]) {
+    context.send(
+      `⌛ ${t('TIMETABLE_TIMEOUT')} (${ms(
+        timeouts[context.peerId] - Date.now(),
+      )})`,
+    );
     return;
   }
-  timeout = Date.now() + ms('1m');
+  timeouts[context.peerId] = Date.now() + ms('1m');
 
   // Get image url
   const $ = await getCheerioContent('http://simfpolyteh.ru/raspisanie');
