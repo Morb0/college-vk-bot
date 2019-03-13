@@ -11,6 +11,11 @@ export const putUser = async (
     fields: 'first_name,last_name',
   });
 
+  if (!context.senderId) {
+    console.error('senderId not found', context);
+    return;
+  }
+
   const foundUser = await UserModel.findOne({ id: context.senderId });
   if (!foundUser) {
     // Add new user
