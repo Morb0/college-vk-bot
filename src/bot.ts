@@ -73,7 +73,7 @@ const hearCommand = (
     // Middlewares
     (context: MessageContext) => {
       // Maintenance
-      if (process.env.MAINTENANCE) {
+      if (process.env.MAINTENANCE === '1') {
         const devPeerIds = process.env.DEV_PEER_IDS.split(',');
         if (devPeerIds.indexOf(context.peerId.toString()) === -1) {
           context.send(`🚧 ${t('MAINTENANCE')}`);
