@@ -8,7 +8,7 @@ import { findRank } from '../utils';
 
 const handler = async (context: MessageContext) => {
   const foundUser = await UserModel.findOne({ id: context.senderId });
-  const foundRanks = await RankModel.find();
+  const foundRanks = await RankModel.find().sort({ exp: 1 });
 
   if (!foundRanks.length) {
     throw new Error('No ranks created in db');

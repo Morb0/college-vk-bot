@@ -5,7 +5,11 @@ import { RankModel } from '../models/rank';
 import { t } from '../translate';
 
 const handler = async (context: MessageContext) => {
-  const foundRanks = await RankModel.find();
+  if (process.env.RANKS_SHOW_DISABLED === '1') {
+    return context.send(`🔒 ${t('RANKS_SHOW_DISABLED')}`);
+  }
+
+  const foundRanks = await RankModel.find().sort({ exp: 1 });
 
   if (!foundRanks.length) {
     throw new Error('No ranks created in db');
