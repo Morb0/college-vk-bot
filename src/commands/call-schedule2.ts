@@ -19,13 +19,7 @@ const handler = async (context: MessageContext, vk: VK) => {
   const combinedImg = await merge([imgBufferOther, imgBufferTuesday]);
 
   // Send message
-  const attachmentPhoto = await vk.upload.messagePhoto({
-    source: combinedImg,
-  });
-
-  context.reply({
-    attachment: attachmentPhoto.toString(),
-  });
+  context.sendPhoto(combinedImg);
 };
 
 const command: Command = {

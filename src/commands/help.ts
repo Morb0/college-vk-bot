@@ -4,7 +4,7 @@ import { Command } from '../interfaces/command';
 import { t } from '../translate';
 
 const handler = (context: MessageContext) => {
-  context.reply(t('HELP'));
+  context.send(t('HELP'));
 };
 
 const command: Command = {

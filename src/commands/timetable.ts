@@ -52,7 +52,7 @@ const handler = async (context: MessageContext, vk: VK) => {
     source: modifiedImgBuffer,
   });
 
-  context.reply({
+  context.send({
     attachment: attachmentPhoto.toString(),
   });
 };

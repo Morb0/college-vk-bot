@@ -18,7 +18,7 @@ const handler = async (context: MessageContext) => {
   const ranksList = foundRanks
     .map(r => `▶ ${r.name} - ${r.exp} ${t('EXP')}`)
     .join('\n');
-  context.reply(`📋 ${t('RANKS_TITLE')}:\n${ranksList}`);
+  context.send(`📋 ${t('RANKS_TITLE')}:\n${ranksList}`);
 };
 
 const command: Command = {
