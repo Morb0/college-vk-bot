@@ -39,6 +39,11 @@ const checkNewRank = async (
 };
 
 export const addExp = async (context: MessageContext): Promise<void> => {
+  // NOTE: Exp add only from chat messages (anti abuse)
+  if (!context.isChat) {
+    return;
+  }
+
   const expCount = calcExp(context);
   await checkNewRank(context, expCount);
 
