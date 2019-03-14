@@ -1,10 +1,10 @@
 module.exports = {
   spamExpPenalize: 20,
   exp: {
-    photo: 2,
-    audio: 2,
-    video: 2,
-    sticker: 1,
+    photo: 1,
+    audio: 1,
+    video: 1,
+    sticker: 0,
     gift: 10,
   },
 };
