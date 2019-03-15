@@ -85,6 +85,10 @@ const hearCommand = (
         }
       }
 
+      if (process.env.MAINTENANCE === '2') {
+        return;
+      }
+
       handle(context);
     },
   );
