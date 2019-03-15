@@ -23,7 +23,7 @@ const handler = async (context: MessageContext) => {
 
 const command: Command = {
   name: 'ranks',
-  commands: ['/ranks'],
+  conditions: ['/ranks'],
   handler,
 };
 
