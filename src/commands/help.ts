@@ -9,7 +9,7 @@ const handler = (context: MessageContext) => {
 
 const command: Command = {
   name: 'help',
-  commands: ['/help'],
+  conditions: ['/help'],
   handler,
 };
 
