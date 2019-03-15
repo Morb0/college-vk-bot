@@ -47,12 +47,6 @@ updates.use(
   },
 );
 
-updates.setHearFallbackHandler(async (context: MessageContext) => {
-    console.log('Add exp');
-    // Add exp
-    await addExp(context);
-});
-
 const hearCommand = (
   name: string,
   conditions: string[],
@@ -78,6 +72,7 @@ const hearCommand = (
     ],
     // Middlewares
     (context: MessageContext) => {
+       console.log('Message catched');
       // Maintenance
       if (process.env.MAINTENANCE === '1') {
         const devPeerIds = process.env.DEV_PEER_IDS.split(',');
@@ -121,6 +116,12 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
     console.error('Loading commands error:', err);
     process.exit(1);
   }
+});
+
+updates.setHearFallbackHandler(async (context: MessageContext) => {
+    console.log('Add exp');
+    // Add exp
+    await addExp(context);
 });
 
 async function run() {
