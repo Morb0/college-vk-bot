@@ -59,7 +59,7 @@ const handler = async (context: MessageContext, vk: VK) => {
 
 const command: Command = {
   name: 'timetable',
-  commands: [
+  conditions: [
     '/tt',
     '/timetable',
     '/raspisanie',
