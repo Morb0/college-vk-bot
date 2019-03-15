@@ -29,7 +29,7 @@ updates.use(
     next: (...args: any[]) => any,
   ): Promise<void> => {
     // Skip sent message by self
-    if (context.is(['message']) && context.isOutbox) {
+    if (context.is(['message']) && (context.isOutbox || context.senderId < 0)) {
       return;
     }
 
