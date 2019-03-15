@@ -26,7 +26,7 @@ const calcExp = (context: MessageContext): number => {
 const checkNewRank = async (
   context: MessageContext,
   expCount: number,
-): Promise<Rank | void> => {
+): Promise<void> => {
   const foundUser = await UserModel.findOne({ id: context.senderId });
   const foundRanks = await RankModel.find().sort({ exp: 1 });
   const curRank = findRank(foundRanks, foundUser.exp);

@@ -8,7 +8,10 @@ import { createMention } from '../utils';
 
 const warnings = {};
 const delay = {};
-export const antiSpam = async (context: MessageContext): Promise<void> => {
+export const antiSpam = async (
+  context: MessageContext,
+  next: () => any,
+): Promise<void> => {
   if (!delay[context.senderId]) {
     delay[context.senderId] = {
       counter: 1,
@@ -58,4 +61,6 @@ export const antiSpam = async (context: MessageContext): Promise<void> => {
     () => delete delay[context.senderId],
     ms('5s'),
   );
+
+  await next();
 };

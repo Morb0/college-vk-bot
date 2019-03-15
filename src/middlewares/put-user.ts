@@ -4,9 +4,9 @@ import { UserModel } from '../models/user';
 
 export const putUser = async (
   context: MessageContext,
-  vk: VK,
+  next: () => any,
 ): Promise<void> => {
-  const receivedUser = await vk.api.users.get({
+  const receivedUser = await context.vk.api.users.get({
     user_ids: context.senderId.toString(),
     fields: 'first_name,last_name',
   });
@@ -31,4 +31,6 @@ export const putUser = async (
       lastName: receivedUser[0].last_name,
     });
   }
+
+  await next();
 };

@@ -6,10 +6,10 @@ import { readdirSync } from 'fs';
 import { resolve } from 'path';
 import { MessageContext, VK } from 'vk-io';
 
-import { addExp } from './functions/add-exp';
-import { antiSpam } from './functions/anti-spam';
-import { putUser } from './functions/put-user';
 import { Command } from './interfaces/command';
+import { addExp } from './middlewares/add-exp';
+import { antiSpam } from './middlewares/anti-spam';
+import { putUser } from './middlewares/put-user';
 import { t } from './translate';
 
 const vk = new VK();
@@ -34,18 +34,15 @@ updates.use(
     }
 
     try {
-      // Put user
-      await putUser(context, vk);
-
-      // Anti spam
-      await antiSpam(context);
-
       await next();
     } catch (err) {
       console.error('Error:', err);
     }
   },
 );
+
+updates.on('message', putUser);
+updates.on('message', antiSpam);
 
 const hearMiddleware = (handle: (context: MessageContext) => any) => {
   return (context: MessageContext) => {
