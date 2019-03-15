@@ -12,7 +12,7 @@ const handler = async (context: MessageContext) => {
 
 const command: Command = {
   name: 'fact',
-  commands: ['/f', '/fact'],
+  conditions: ['/f', '/fact'],
   handler,
 };
 
