@@ -8,7 +8,7 @@ const handler = (context: MessageContext) => {
 
 const command: Command = {
   name: 'alive',
-  commands: ['/alive'],
+  conditions: ['/alive'],
   handler,
 };
 
