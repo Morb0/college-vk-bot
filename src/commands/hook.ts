@@ -18,7 +18,6 @@ const handler = async (context: MessageContext, vk: VK) => {
 };
 
 const command: Command = {
-  name: 'hook',
   conditions: ['/h', '/hook'],
   handler,
 };

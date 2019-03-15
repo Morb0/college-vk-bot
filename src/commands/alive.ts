@@ -7,7 +7,6 @@ const handler = (context: MessageContext) => {
 };
 
 const command: Command = {
-  name: 'alive',
   conditions: ['/alive'],
   handler,
 };

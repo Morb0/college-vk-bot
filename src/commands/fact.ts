@@ -11,7 +11,6 @@ const handler = async (context: MessageContext) => {
 };
 
 const command: Command = {
-  name: 'fact',
   conditions: ['/f', '/fact'],
   handler,
 };
