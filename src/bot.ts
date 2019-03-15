@@ -72,7 +72,7 @@ const hearCommand = (
     ],
     // Middlewares
     (context: MessageContext) => {
-       console.log('Message catched');
+      console.log('Message catched');
       // Maintenance
       if (process.env.MAINTENANCE === '1') {
         const devPeerIds = process.env.DEV_PEER_IDS.split(',');
@@ -119,23 +119,14 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
 });
 
 updates.setHearFallbackHandler(async (context: MessageContext) => {
-    console.log('Add exp');
-    // Add exp
-    await addExp(context);
+  console.log('Add exp');
+  // Add exp
+  await addExp(context);
 });
 
 async function run() {
-  if (process.env.UPDATES === 'webhook') {
-    await updates.startWebhook({
-      tls: null,
-    });
-
-    console.log('Webhook server started');
-  } else {
-    await updates.startPolling();
-
-    console.log('Polling started');
-  }
+  await updates.startPolling();
+  console.log('Polling started');
 }
 
 run().catch(console.error);
