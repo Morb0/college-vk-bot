@@ -48,6 +48,7 @@ updates.use(
 );
 
 updates.setHearFallbackHandler(async (context: MessageContext) => {
+    console.log('Add exp');
     // Add exp
     await addExp(context);
 });
