@@ -1,6 +1,9 @@
 # Peers
 peerIds.json
 
+# VSCode
+.vscode
+
 # Logs
 logs
 *.log
