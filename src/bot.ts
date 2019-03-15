@@ -50,7 +50,7 @@ updates.use(
 const hearMiddleware = (handle: (context: MessageContext) => any) => {
   return (context: MessageContext) => {
     // Maintenance
-    const isMaintenance = !!process.env.MAINTENANCE;
+    const isMaintenance = process.env.MAINTENANCE !== '0';
     if (isMaintenance) {
       const devPeerIds = process.env.DEV_PEER_IDS.split(',');
       if (devPeerIds.indexOf(context.peerId.toString()) === -1) {
