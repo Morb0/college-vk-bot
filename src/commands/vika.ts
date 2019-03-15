@@ -69,7 +69,7 @@ const handler = async (context: MessageContext, vk: VK) => {
 
 const command: Command = {
   name: 'vika',
-  commands: ['/vika', '/roflan'],
+  conditions: ['/vika', '/roflan'],
   handler,
 };
 
