@@ -55,7 +55,7 @@ const hearCommand = (
   conditions: string[],
   handle: (context: MessageContext) => any,
 ): void => {
-  console.log(`Register commands: ${conditions.join(', ')}`);
+  console.log(`Register conditions: ${conditions.join(', ')}`);
 
   updates.hear(
     [
@@ -77,16 +77,19 @@ const hearCommand = (
     (context: MessageContext) => {
       console.log('Message catched');
       // Maintenance
-      if (process.env.MAINTENANCE === '1') {
+      const isMaintenance = !!process.env.MAINTENANCE;
+      if (isMaintenance) {
         const devPeerIds = process.env.DEV_PEER_IDS.split(',');
         if (devPeerIds.indexOf(context.peerId.toString()) === -1) {
-          context.send(`🚧 ${t('MAINTENANCE')}`);
-          return;
-        }
-      }
+          if (process.env.MAINTENANCE === '1') {
+            context.send(`🚧 ${t('MAINTENANCE')}`);
+            return;
+          }
 
-      if (process.env.MAINTENANCE === '2') {
-        return;
+          if (process.env.MAINTENANCE === '2') {
+            return;
+          }
+        }
       }
 
       handle(context);
