@@ -30,7 +30,7 @@ const handler = async (context: MessageContext, vk: VK) => {
 
 const command: Command = {
   name: 'callSchedule1',
-  commands: ['/cs1', '/call1'],
+  conditions: ['/cs1', '/call1'],
   handler,
 };
 
