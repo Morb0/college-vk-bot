@@ -40,9 +40,6 @@ updates.use(
       // Anti spam
       await antiSpam(context);
 
-      // Add exp
-      await addExp(context);
-
       await next();
     } catch (err) {
       console.error('Error:', err);
@@ -50,51 +47,36 @@ updates.use(
   },
 );
 
-const hearCommand = (
-  name: string,
-  conditions: string[],
-  handle: (context: MessageContext) => any,
-): void => {
-  console.log(`Register conditions: ${conditions.join(', ')}`);
-
-  updates.hear(
-    [
-      (text: string) => {
-        if (/[club\d+\|?.+\] \/[a-zA-Z0-9А-Яа-я]+/.test(text)) {
-          // Check command format
-          for (const command of conditions) {
-            if (text && text === command) {
-              return true;
-            }
-          }
+const hearMiddleware = (handle: (context: MessageContext) => any) => {
+  return (context: MessageContext) => {
+    // Maintenance
+    const isMaintenance = !!process.env.MAINTENANCE;
+    if (isMaintenance) {
+      const devPeerIds = process.env.DEV_PEER_IDS.split(',');
+      if (devPeerIds.indexOf(context.peerId.toString()) === -1) {
+        if (process.env.MAINTENANCE === '1') {
+          context.send(`🚧 ${t('MAINTENANCE')}`);
+          return;
         }
 
-        return false;
-      },
-      ...conditions,
-    ],
-    // Middlewares
-    (context: MessageContext) => {
-      console.log('Message catched');
-      // Maintenance
-      const isMaintenance = !!process.env.MAINTENANCE;
-      if (isMaintenance) {
-        const devPeerIds = process.env.DEV_PEER_IDS.split(',');
-        if (devPeerIds.indexOf(context.peerId.toString()) === -1) {
-          if (process.env.MAINTENANCE === '1') {
-            context.send(`🚧 ${t('MAINTENANCE')}`);
-            return;
-          }
-
-          if (process.env.MAINTENANCE === '2') {
-            return;
-          }
+        if (process.env.MAINTENANCE === '2') {
+          return;
         }
       }
+    }
 
-      handle(context);
-    },
-  );
+    handle(context);
+  };
+};
+
+const hearCommand = (
+  conditions: string[],
+  handle: (context: MessageContext) => any,
+) => {
+  console.log(`Register conditions: ${conditions.join(', ')}`);
+
+  // Using 'as any' - https://github.com/negezor/vk-io/issues/138
+  updates.hear(conditions as any, hearMiddleware(handle));
 };
 
 // Load commands
@@ -106,22 +88,18 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
 
     const path = resolve(__dirname, 'commands', file);
     const command: Command = (await import(path)).default;
-    hearCommand(
-      command.name,
-      command.conditions,
-      async (context: MessageContext) => {
-        try {
-          await command.handler(context, vk);
-        } catch (err) {
-          if (err.code === 917) {
-            context.send(`❌ ${t('ADMIN_PERMISSION_REQUIRED')}`);
-          } else {
-            console.error(err);
-            context.send(`❌ ${t('UNKNOWN_ERROR')}`);
-          }
+    hearCommand(command.conditions, async (context: MessageContext) => {
+      try {
+        await command.handler(context, vk);
+      } catch (err) {
+        if (err.code === 917) {
+          context.send(`❌ ${t('ADMIN_PERMISSION_REQUIRED')}`);
+        } else {
+          console.error(err);
+          context.send(`❌ ${t('UNKNOWN_ERROR')}`);
         }
-      },
-    );
+      }
+    });
   } catch (err) {
     console.error('Loading commands error:', err);
     process.exit(1);
@@ -129,8 +107,7 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
 });
 
 updates.setHearFallbackHandler(async (context: MessageContext) => {
-  console.log('Add exp');
-  // Add exp
+  // Add exp only for not command messages
   await addExp(context);
 });
 
