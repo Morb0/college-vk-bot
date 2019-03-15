@@ -31,7 +31,7 @@ const handler = async (context: MessageContext) => {
 
 const command: Command = {
   name: 'myRank',
-  commands: ['/r', '/myrank'],
+  conditions: ['/r', '/myrank'],
   handler,
 };
 
