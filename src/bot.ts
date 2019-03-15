@@ -100,7 +100,7 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
     const command: Command = (await import(path)).default;
     hearCommand(
       command.name,
-      command.commands,
+      command.conditions,
       async (context: MessageContext) => {
         try {
           await command.handler(context, vk);
