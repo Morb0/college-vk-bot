@@ -40,6 +40,9 @@ updates.use(
       // Anti spam
       await antiSpam(context);
 
+      // Add exp
+      await addExp(context);
+
       await next();
     } catch (err) {
       console.error('Error:', err);
