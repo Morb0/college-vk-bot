@@ -10,7 +10,7 @@ const timeouts = {};
 const handler = async (context: MessageContext, vk: VK) => {
   // Timeout check
   if (Date.now() < timeouts[context.peerId]) {
-    context.send(
+    await context.send(
       `⌛ ${t('TIMETABLE_TIMEOUT')} (${ms(
         timeouts[context.peerId] - Date.now(),
       )})`,
@@ -52,7 +52,7 @@ const handler = async (context: MessageContext, vk: VK) => {
     source: modifiedImgBuffer,
   });
 
-  context.send({
+  await context.send({
     attachment: attachmentPhoto.toString(),
   });
 };

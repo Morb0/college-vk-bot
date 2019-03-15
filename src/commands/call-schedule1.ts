@@ -23,7 +23,7 @@ const handler = async (context: MessageContext, vk: VK) => {
     source: combinedImg,
   });
 
-  context.send({
+  await context.send({
     attachment: attachmentPhoto.toString(),
   });
 };

@@ -9,6 +9,7 @@ import { MessageContext, VK } from 'vk-io';
 import { Command } from './interfaces/command';
 import { addExp } from './middlewares/add-exp';
 import { antiSpam } from './middlewares/anti-spam';
+import { maintenanceCheck } from './middlewares/maintenance';
 import { putUser } from './middlewares/put-user';
 import { t } from './translate';
 
@@ -44,26 +45,10 @@ updates.use(
 updates.on('message', putUser);
 updates.on('message', antiSpam);
 
-const hearMiddleware = (handle: (context: MessageContext) => any) => {
-  return (context: MessageContext) => {
-    // Maintenance
-    const isMaintenance = process.env.MAINTENANCE !== '0';
-    if (isMaintenance) {
-      const devPeerIds = process.env.DEV_PEER_IDS.split(',');
-      if (devPeerIds.indexOf(context.peerId.toString()) === -1) {
-        if (process.env.MAINTENANCE === '1') {
-          context.send(`🚧 ${t('MAINTENANCE')}`);
-          return;
-        }
-
-        if (process.env.MAINTENANCE === '2') {
-          return;
-        }
-      }
-    }
-
-    handle(context);
-  };
+const hearMiddleware = (handle: (context: MessageContext) => any) => (
+  context: MessageContext,
+) => {
+  return Promise.all([maintenanceCheck(context), handle(context)]);
 };
 
 const hearCommand = (
@@ -90,10 +75,10 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
         await command.handler(context, vk);
       } catch (err) {
         if (err.code === 917) {
-          context.send(`❌ ${t('ADMIN_PERMISSION_REQUIRED')}`);
+          await context.send(`❌ ${t('ADMIN_PERMISSION_REQUIRED')}`);
         } else {
           console.error(err);
-          context.send(`❌ ${t('UNKNOWN_ERROR')}`);
+          await context.send(`❌ ${t('UNKNOWN_ERROR')}`);
         }
       }
     });

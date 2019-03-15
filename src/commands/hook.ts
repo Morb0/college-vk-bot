@@ -12,7 +12,7 @@ const handler = async (context: MessageContext, vk: VK) => {
   const randomProfile =
     members.profiles[getRandomInt(0, members.profiles.length)];
 
-  context.send(
+  await context.send(
     `🎣 Get over here - ${randomProfile.first_name} ${randomProfile.last_name}`,
   );
 };

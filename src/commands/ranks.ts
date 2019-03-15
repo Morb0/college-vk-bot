@@ -6,7 +6,7 @@ import { t } from '../translate';
 
 const handler = async (context: MessageContext) => {
   if (process.env.RANKS_SHOW_DISABLED === '1') {
-    return context.send(`🔒 ${t('RANKS_SHOW_DISABLED')}`);
+    return await context.send(`🔒 ${t('RANKS_SHOW_DISABLED')}`);
   }
 
   const foundRanks = await RankModel.find().sort({ exp: 1 });
@@ -18,7 +18,7 @@ const handler = async (context: MessageContext) => {
   const ranksList = foundRanks
     .map(r => `▶ ${r.name} - ${r.exp} ${t('EXP')}`)
     .join('\n');
-  context.send(`📋 ${t('RANKS_TITLE')}:\n${ranksList}`);
+  await context.send(`📋 ${t('RANKS_TITLE')}:\n${ranksList}`);
 };
 
 const command: Command = {

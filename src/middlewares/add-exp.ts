@@ -34,7 +34,7 @@ const checkNewRank = async (
 
   if (curRank._id !== newRank._id) {
     const mention = createMention(context.senderId, foundUser.firstName);
-    context.send(`${mention}, 🎉 ${t('RANK_UP')}: ${newRank.name}`);
+    await context.send(`${mention}, 🎉 ${t('RANK_UP')}: ${newRank.name}`);
   }
 };
 

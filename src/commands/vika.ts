@@ -35,7 +35,7 @@ const handler = async (context: MessageContext, vk: VK) => {
   ];
 
   if (Date.now() < timeout) {
-    context.send(`⌛ ${t('VIKA_TIMEOUT')} (${ms(timeout - Date.now())})`);
+    await context.send(`⌛ ${t('VIKA_TIMEOUT')} (${ms(timeout - Date.now())})`);
     return;
   }
   timeout = Date.now() + ms('2h');
@@ -62,7 +62,7 @@ const handler = async (context: MessageContext, vk: VK) => {
   );
 
   // Send message
-  context.send({
+  await context.send({
     attachment: [attachmentAudio.toString(), attachmentPhoto.toString()],
   });
 };

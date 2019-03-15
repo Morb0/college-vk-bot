@@ -29,7 +29,7 @@ export const antiSpam = async (
 
     // Spam warning
     if (!warnings[context.senderId]) {
-      context.send(`${mention}, 🚨 ${t('SPAM_WARNING')}`);
+      await context.send(`${mention}, 🚨 ${t('SPAM_WARNING')}`);
       warnings[context.senderId] = setTimeout(
         () => delete warnings[context.senderId],
         ms('1m'),
@@ -38,7 +38,7 @@ export const antiSpam = async (
       // Penalize for spam
       const penalizeExpCount = config.get('spamExpPenalize');
       if (foundUser.exp >= penalizeExpCount) {
-        context.send(
+        await context.send(
           `${mention}, 🚨 ${t('SPAM_PENALIZE')}: ${penalizeExpCount} ${t(
             'EXP',
           )}`,
