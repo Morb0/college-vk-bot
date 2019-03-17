@@ -1,7 +1,6 @@
 import config from 'config';
 import { MessageContext } from 'vk-io';
 
-import { Rank } from '../interfaces/rank';
 import { RankModel } from '../models/rank';
 import { UserModel } from '../models/user';
 import { t } from '../translate';
