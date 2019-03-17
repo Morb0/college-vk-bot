@@ -1,66 +1,103 @@
 import config from 'config';
-import ms from 'ms';
 import { MessageContext } from 'vk-io';
 
 import { UserModel } from '../models/user';
 import { t } from '../translate';
 import { createMention } from '../utils';
 
-const warnings = {};
-const delay = {};
+const senders = [];
+const messages = [];
+const warned = [];
+const penalized = [];
+const warnUser = async (context: MessageContext): Promise<void> => {
+  warned.push(context.senderId);
+  const foundUser = await UserModel.findOne({ id: context.senderId }).exec();
+  const mention = createMention(context.senderId, foundUser.firstName);
+  context.send(`${mention}, 🚨 ${t('SPAM_WARNING')}`);
+};
+
+const penalizeUser = async (
+  context: MessageContext,
+  penalizeExpCount: number,
+): Promise<void> => {
+  const foundUser = await UserModel.findOne({ id: context.senderId }).exec();
+  if (foundUser.exp > penalizeExpCount) {
+    penalized.push(context.senderId);
+    const mention = createMention(context.senderId, foundUser.firstName);
+    await context.send(
+      `${mention}, 🚨 ${t('SPAM_PENALIZE')}: ${penalizeExpCount} ${t('EXP')}`,
+    );
+    await UserModel.findByIdAndUpdate(foundUser._id, {
+      $inc: {
+        exp: -penalizeExpCount,
+      },
+    }).exec();
+  }
+};
+
 export const antiSpam = async (
   context: MessageContext,
   next: () => any,
 ): Promise<void> => {
-  if (!delay[context.senderId]) {
-    delay[context.senderId] = {
-      counter: 1,
-    };
-  } else {
-    delay[context.senderId].counter++;
+  const currentTime = Date.now();
+  const settings = config.get('antiSpam');
+  senders.push({
+    time: currentTime,
+    sender: context.senderId,
+  });
+  messages.push({
+    text: context.text,
+    sender: context.senderId,
+  });
+
+  let msgMatch = 0;
+  for (const message of messages) {
+    if (
+      message.text.includes(context.text) &&
+      message.sender === context.senderId
+    ) {
+      msgMatch++;
+    }
   }
 
-  clearTimeout(delay[context.senderId].timer);
-  if (delay[context.senderId].counter >= 5) {
-    delete delay[context.senderId];
+  if (
+    msgMatch === settings.maxDuplicatesWarning &&
+    !warned.includes(context.senderId)
+  ) {
+    await warnUser(context);
+  }
 
-    const foundUser = await UserModel.findOne({ id: context.senderId }).exec();
-    const mention = createMention(context.senderId, foundUser.firstName);
+  if (
+    msgMatch === settings.maxDuplicatesPenalize &&
+    !penalized.includes(context.senderId)
+  ) {
+    await penalizeUser(context, settings.penalizeExpCount);
+  }
 
-    // Spam warning
-    if (!warnings[context.senderId]) {
-      await context.send(`${mention}, 🚨 ${t('SPAM_WARNING')}`);
-      warnings[context.senderId] = setTimeout(
-        () => delete warnings[context.senderId],
-        ms('2m'),
-      );
-    } else {
-      // Penalize for spam
-      const penalizeExpCount = config.get('spamExpPenalize');
-      if (foundUser.exp >= penalizeExpCount) {
-        await context.send(
-          `${mention}, 🚨 ${t('SPAM_PENALIZE')}: ${penalizeExpCount} ${t(
-            'EXP',
-          )}`,
-        );
-        await UserModel.findByIdAndUpdate(foundUser._id, {
-          $inc: {
-            exp: -penalizeExpCount,
-          },
-        }).exec();
+  let matched = 0;
+  for (const key in senders) {
+    if (senders[key].time > currentTime - settings.interval) {
+      matched++;
+      if (
+        matched == settings.warnBuffer &&
+        !warned.includes(context.senderId)
+      ) {
+        await warnUser(context);
+      } else if (matched == settings.penalizeBuffer) {
+        if (!penalized.includes(context.senderId)) {
+          await penalizeUser(context, settings.penalizeExpCount);
+        }
       }
-
-      clearTimeout(warnings[context.senderId]);
-      delete warnings[context.senderId];
+    } else if (senders[key].time < currentTime - settings.interval) {
+      senders.splice(+key);
+      warned.splice(warned.indexOf(senders[key]));
+      penalized.splice(penalized.indexOf(senders[key]));
     }
 
-    return;
+    if (messages.length >= 200) {
+      messages.shift();
+    }
   }
-
-  delay[context.senderId].timer = setTimeout(
-    () => delete delay[context.senderId],
-    ms('6s'),
-  );
 
   await next();
 };
