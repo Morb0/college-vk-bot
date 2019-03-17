@@ -1,7 +1,7 @@
 {
   "ADMIN_PERMISSION_REQUIRED": "To use this command, bot requires admin rights",
   "UNKNOWN_ERROR": "An unknown error occurred while trying to execute a command",
-  "HELP": "📋 List of available commands:\n⏩ Schedule:\n▶ /tt - Give available time table\n▶ /cs1 - Give call schedule for first block\n▶ /cs2 - Give call schedule for second block\n\n⏩ Profile:\n▶ /r - My rank\n▶ /ranks - Rank list\n\n⏩ Fun:\n▶ /fact - Give random fact from list\n▶ /hook - Hook random chat user (Admin permissions only)\n▶ /vika - Command for fun\n\n⏩ Other:\n▶ /help - Show available commands\n▶ /alive - Check bot status",
+  "HELP": "📋 List of available commands:\n⏩ Schedule:\n▶ /tt - Give available time table\n▶ /cs1 - Give call schedule for first block\n▶ /cs2 - Give call schedule for second block\n\n⏩ Profile:\n▶ /r - My rank\n▶ /ranks - Rank list\n▶ /rt - Top 10 by count of exp\n\n⏩ Fun:\n▶ /fact - Give random fact from list\n▶ /hook - Hook random chat user (Admin permissions only)\n▶ /vika - Command for fun\n\n⏩ Other:\n▶ /help - Show available commands\n▶ /alive - Check bot status",
   "TIMETABLE_TIMEOUT": "Timetable in timeout",
   "VIKA_TIMEOUT": "Arthas takes out the f**king trash",
   "MY_RANK": "Your rank:",
