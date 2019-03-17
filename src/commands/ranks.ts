@@ -9,7 +9,9 @@ const handler = async (context: MessageContext) => {
     return await context.send(`🔒 ${t('RANKS_SHOW_DISABLED')}`);
   }
 
-  const foundRanks = await RankModel.find().sort({ exp: 1 });
+  const foundRanks = await RankModel.find()
+    .sort({ exp: 1 })
+    .exec();
 
   if (!foundRanks.length) {
     throw new Error('No ranks created in db');

@@ -16,7 +16,7 @@ export const putUser = async (
     return;
   }
 
-  const foundUser = await UserModel.findOne({ id: context.senderId });
+  const foundUser = await UserModel.findOne({ id: context.senderId }).exec();
   if (!foundUser) {
     // Add new user
     await UserModel.create({
@@ -29,7 +29,7 @@ export const putUser = async (
     await UserModel.findByIdAndUpdate(foundUser._id, {
       firstName: receivedUser[0].first_name,
       lastName: receivedUser[0].last_name,
-    });
+    }).exec();
   }
 
   await next();

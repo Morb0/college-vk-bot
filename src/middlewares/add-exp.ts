@@ -27,8 +27,10 @@ const checkNewRank = async (
   context: MessageContext,
   expCount: number,
 ): Promise<void> => {
-  const foundUser = await UserModel.findOne({ id: context.senderId });
-  const foundRanks = await RankModel.find().sort({ exp: 1 });
+  const foundUser = await UserModel.findOne({ id: context.senderId }).exec();
+  const foundRanks = await RankModel.find()
+    .sort({ exp: 1 })
+    .exec();
   const curRank = findRank(foundRanks, foundUser.exp);
   const newRank = findRank(foundRanks, foundUser.exp + expCount);
 
@@ -54,5 +56,5 @@ export const addExp = async (context: MessageContext): Promise<void> => {
         exp: expCount,
       },
     },
-  );
+  ).exec();
 };
