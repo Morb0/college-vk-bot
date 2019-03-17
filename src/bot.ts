@@ -48,7 +48,7 @@ updates.on('message', antiSpam);
 const hearMiddleware = (handle: (context: MessageContext) => any) => (
   context: MessageContext,
 ) => {
-  return Promise.all([maintenanceCheck(context), handle(context)]);
+  return maintenanceCheck(context, handle);
 };
 
 const hearCommand = (

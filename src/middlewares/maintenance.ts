@@ -2,7 +2,10 @@ import { MessageContext } from 'vk-io';
 
 import { t } from '../translate';
 
-export const maintenanceCheck = async (context: MessageContext) => {
+export const maintenanceCheck = async (
+  context: MessageContext,
+  handle: (context: MessageContext) => any,
+) => {
   const isMaintenance =
     !!process.env.MAINTENANCE && process.env.MAINTENANCE !== '0';
   if (isMaintenance) {
@@ -18,4 +21,6 @@ export const maintenanceCheck = async (context: MessageContext) => {
       }
     }
   }
+
+  await handle(context);
 };
