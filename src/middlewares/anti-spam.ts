@@ -59,7 +59,7 @@ export const antiSpam = async (
 
   delay[context.senderId].timer = setTimeout(
     () => delete delay[context.senderId],
-    ms('5s'),
+    ms('6s'),
   );
 
   await next();
