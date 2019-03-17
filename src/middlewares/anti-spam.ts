@@ -28,31 +28,29 @@ export const antiSpam = async (
     const mention = createMention(context.senderId, foundUser.firstName);
 
     // Spam warning
-    if (!warnings[context.senderId]) {
-      await context.send(`${mention}, 🚨 ${t('SPAM_WARNING')}`);
-      warnings[context.senderId] = setTimeout(
-        () => delete warnings[context.senderId],
-        ms('1m'),
+    // if (!warnings[context.senderId]) {
+    //   await context.send(`${mention}, 🚨 ${t('SPAM_WARNING')}`);
+    //   warnings[context.senderId] = setTimeout(
+    //     () => delete warnings[context.senderId],
+    //     ms('1m'),
+    //   );
+    // } else {
+    // Penalize for spam
+    const penalizeExpCount = config.get('spamExpPenalize');
+    if (foundUser.exp >= penalizeExpCount) {
+      await context.send(
+        `${mention}, 🚨 ${t('SPAM_PENALIZE')}: ${penalizeExpCount} ${t('EXP')}`,
       );
-    } else {
-      // Penalize for spam
-      const penalizeExpCount = config.get('spamExpPenalize');
-      if (foundUser.exp >= penalizeExpCount) {
-        await context.send(
-          `${mention}, 🚨 ${t('SPAM_PENALIZE')}: ${penalizeExpCount} ${t(
-            'EXP',
-          )}`,
-        );
-        await UserModel.findByIdAndUpdate(foundUser._id, {
-          $inc: {
-            exp: -penalizeExpCount,
-          },
-        });
-      }
-
-      clearTimeout(warnings[context.senderId]);
-      delete warnings[context.senderId];
+      await UserModel.findByIdAndUpdate(foundUser._id, {
+        $inc: {
+          exp: -penalizeExpCount,
+        },
+      });
     }
+
+    //   clearTimeout(warnings[context.senderId]);
+    //   delete warnings[context.senderId];
+    // }
 
     return;
   }
