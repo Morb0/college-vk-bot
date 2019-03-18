@@ -1,15 +1,14 @@
-import { connect } from 'mongoose';
+import { createConnection } from 'typeorm';
 
-connect(
-  process.env.MONGO_URL,
-  {
-    useNewUrlParser: true,
-    useFindAndModify: false,
-  },
-)
-  .then(() => {
-    console.log('Database connection successful');
-  })
-  .catch(err => {
-    throw err;
+if (!process.env.DATABASE_URL) {
+  throw new Error('Env DATABASE_URL required');
+}
+
+export const connectDb = () =>
+  createConnection({
+    type: 'postgres',
+    url: process.env.DATABASE_URL,
+    entities: [__dirname + '/entity/*.ts'],
+    synchronize: true,
+    ssl: true,
   });

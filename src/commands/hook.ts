@@ -1,10 +1,10 @@
-import VK, { MessageContext } from 'vk-io';
+import { MessageContext } from 'vk-io';
 
 import { Command } from '../interfaces/command';
 import { getRandomInt } from '../utils';
 
-const handler = async (context: MessageContext, vk: VK) => {
-  const members = await vk.api.messages.getConversationMembers({
+const handler = async (context: MessageContext) => {
+  const members = await context.vk.api.messages.getConversationMembers({
     peer_id: context.peerId,
   });
 

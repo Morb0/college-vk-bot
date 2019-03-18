@@ -1,34 +1,29 @@
+import { LessThanOrEqual } from 'typeorm';
 import { MessageContext } from 'vk-io';
 
+import { Rank } from '../entity/Rank';
+import { User } from '../entity/User';
 import { Command } from '../interfaces/command';
-import { RankModel } from '../models/rank';
-import { UserModel } from '../models/user';
 import { t } from '../translate';
-import { findRank } from '../utils';
 
 const handler = async (context: MessageContext) => {
-  const foundUser = await UserModel.findOne({ id: context.senderId }).exec();
-  const foundRanks = await RankModel.find()
-    .sort({ exp: 1 })
-    .exec();
+  const foundUser = await User.findOne({ vkId: context.senderId });
+  const currentRank = await Rank.findOne({
+    order: { xp: 'DESC' },
+    where: { xp: LessThanOrEqual(foundUser.xp) },
+  });
+  const nextRank = await Rank.findOne({ id: currentRank.id + 1 });
 
-  if (!foundRanks.length) {
-    throw new Error('No ranks created in db');
-  }
-
-  const curRank = findRank(foundRanks, foundUser.exp);
-  const nextRankIndex = foundRanks.findIndex(r => r._id === curRank._id);
-  const nextRank = foundRanks[nextRankIndex + 1];
-  let rankUpRemainText = '';
-  if (!nextRank) {
-    rankUpRemainText = `🎉 ${t('RANK_MAX')}`;
-  } else {
-    rankUpRemainText = `📈 ${t('RANK_UP_REMAIN')}: ${foundUser.exp}/${
-      nextRank.exp
-    } ${t('EXP')}`;
-  }
-
-  await context.send(`ℹ ${t('MY_RANK')} ${curRank.name}\n ${rankUpRemainText}`);
+  await context.send(`
+    ℹ ${t('MY_RANK')} ${currentRank.name}
+    ${
+      !nextRank
+        ? `🎉 ${t('RANK_MAX')}`
+        : `📈 ${t('RANK_UP_REMAIN')}: ${foundUser.xp}/${nextRank.xp} ${t(
+            'EXP',
+          )}`
+    }
+  `);
 };
 
 const command: Command = {

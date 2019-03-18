@@ -1,12 +1,12 @@
 import ms from 'ms';
-import VK, { AudioAttachment, MessageContext } from 'vk-io';
+import { AudioAttachment, MessageContext } from 'vk-io';
 
 import { Command } from '../interfaces/command';
 import { t } from '../translate';
 import { getRandomInt, getRawImage } from '../utils';
 
-let timeout;
-const handler = async (context: MessageContext, vk: VK) => {
+let timeout: number;
+const handler = async (context: MessageContext) => {
   const emotesIds = [
     1001738,
     150380,
@@ -48,7 +48,7 @@ const handler = async (context: MessageContext, vk: VK) => {
   );
 
   // Attach photo
-  const attachmentPhoto = await vk.upload.messagePhoto({
+  const attachmentPhoto = await context.vk.upload.messagePhoto({
     source: imgBuffer,
   });
 
@@ -58,7 +58,7 @@ const handler = async (context: MessageContext, vk: VK) => {
       id: 456239689,
       owner_id: 2000421094,
     },
-    vk,
+    context.vk,
   );
 
   // Send message

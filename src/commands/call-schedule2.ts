@@ -1,10 +1,10 @@
 import { merge } from 'image-glue';
-import VK, { MessageContext } from 'vk-io';
+import { MessageContext } from 'vk-io';
 
 import { Command } from '../interfaces/command';
 import { getRawImage } from '../utils';
 
-const handler = async (context: MessageContext, vk: VK) => {
+const handler = async (context: MessageContext) => {
   // Get image
   const [imgBufferTuesday, imgBufferOther] = await Promise.all([
     getRawImage(

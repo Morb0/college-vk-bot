@@ -1,4 +1,4 @@
-const translations = {
+const translations: { [key: string]: { [key: string]: string } } = {
   en: require('../lang/en.json'),
   ru: require('../lang/ru.json'),
 };

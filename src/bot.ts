@@ -1,19 +1,23 @@
+import 'reflect-metadata';
 import 'dotenv/config';
-// import './heroku';
-import './db';
 
 import { readdirSync } from 'fs';
 import { resolve } from 'path';
 import { MessageContext, VK } from 'vk-io';
 
+import { connectDb } from './db';
 import { Command } from './interfaces/command';
-import { addExp } from './middlewares/add-exp';
+import { accrualXP } from './middlewares/accrual-xp';
 import { antiSpam } from './middlewares/anti-spam';
 import { maintenanceCheck } from './middlewares/maintenance';
 import { putUser } from './middlewares/put-user';
 import { t } from './translate';
 
 const vk = new VK();
+
+if (!process.env.VK_TOKEN || !process.env.GROUP_ID) {
+  throw new Error('Env VK_TOKEN and GROUP_ID required');
+}
 
 // Setup token
 vk.setOptions({
@@ -30,7 +34,7 @@ updates.use(
     next: (...args: any[]) => any,
   ): Promise<void> => {
     // Skip sent message by self
-    if (context.is(['message']) && (context.isOutbox || context.senderId < 0)) {
+    if (context.is(['message']) && (context.isOutbox || !context.isUser)) {
       return;
     }
 
@@ -72,13 +76,13 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
     const command: Command = (await import(path)).default;
     hearCommand(command.conditions, async (context: MessageContext) => {
       try {
-        await command.handler(context, vk);
+        await command.handler(context);
       } catch (err) {
         if (err.code === 917) {
           await context.send(`❌ ${t('ADMIN_PERMISSION_REQUIRED')}`);
         } else {
           console.error(err);
-          await context.send(`❌ ${t('UNKNOWN_ERROR')}`);
+          await context.send(`❌ ${t('COMMAND_UNKNOWN_ERROR')}`);
         }
       }
     });
@@ -89,11 +93,18 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
 });
 
 updates.setHearFallbackHandler(async (context: MessageContext) => {
-  // Add exp only for not command messages
-  await addExp(context);
+  try {
+    // Accrual exp only for not command messages
+    await accrualXP(context);
+  } catch (err) {
+    console.error(err);
+    await context.send(`❌ ${t('UNKNOWN_ERROR')}`);
+  }
 });
 
 async function run() {
+  await connectDb();
+  console.log('Database connection successful');
   await updates.startPolling();
   console.log('Polling started');
 }

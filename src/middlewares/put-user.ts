@@ -1,6 +1,6 @@
-import VK, { MessageContext } from 'vk-io';
+import { MessageContext } from 'vk-io';
 
-import { UserModel } from '../models/user';
+import { User } from '../entity/User';
 
 export const putUser = async (
   context: MessageContext,
@@ -16,20 +16,20 @@ export const putUser = async (
     return;
   }
 
-  const foundUser = await UserModel.findOne({ id: context.senderId }).exec();
+  const foundUser = await User.findOne({ vkId: context.senderId });
   if (!foundUser) {
     // Add new user
-    await UserModel.create({
-      id: context.senderId,
+    await User.create({
+      vkId: context.senderId,
+      firstName: receivedUser[0].first_name,
+      lastName: receivedUser[0].last_name,
+    }).save();
+  } else {
+    // Update exist user
+    await User.update(foundUser.id, {
       firstName: receivedUser[0].first_name,
       lastName: receivedUser[0].last_name,
     });
-  } else {
-    // Update exist user
-    await UserModel.findByIdAndUpdate(foundUser._id, {
-      firstName: receivedUser[0].first_name,
-      lastName: receivedUser[0].last_name,
-    }).exec();
   }
 
   await next();

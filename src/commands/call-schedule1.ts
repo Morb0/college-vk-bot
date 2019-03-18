@@ -1,10 +1,10 @@
 import { merge } from 'image-glue';
-import VK, { MessageContext } from 'vk-io';
+import { MessageContext } from 'vk-io';
 
 import { Command } from '../interfaces/command';
 import { getRawImage } from '../utils';
 
-const handler = async (context: MessageContext, vk: VK) => {
+const handler = async (context: MessageContext) => {
   // Get image
   const [imgBufferTuesday, imgBufferOther] = await Promise.all([
     getRawImage(
@@ -19,13 +19,7 @@ const handler = async (context: MessageContext, vk: VK) => {
   const combinedImg = await merge([imgBufferOther, imgBufferTuesday]);
 
   // Send message
-  const attachmentPhoto = await vk.upload.messagePhoto({
-    source: combinedImg,
-  });
-
-  await context.send({
-    attachment: attachmentPhoto.toString(),
-  });
+  context.sendPhoto(combinedImg);
 };
 
 const command: Command = {

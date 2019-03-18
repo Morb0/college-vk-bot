@@ -7,11 +7,10 @@ module.exports = {
     penalizeBuffer: 6,
     interval: 6000,
   },
-  exp: {
+  messageTypeXP: {
     photo: 1,
     audio: 1,
     video: 1,
-    sticker: 0,
     gift: 10,
   },
 };

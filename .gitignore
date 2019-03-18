@@ -4,6 +4,9 @@ peerIds.json
 # VSCode
 .vscode
 
+# Test development
+_dev
+
 # Logs
 logs
 *.log

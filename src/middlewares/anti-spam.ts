@@ -1,17 +1,17 @@
 import config from 'config';
 import { MessageContext } from 'vk-io';
 
-import { UserModel } from '../models/user';
+import { User } from '../entity/User';
 import { t } from '../translate';
 import { createMention } from '../utils';
 
-const senders = [];
-const messages = [];
-const warned = [];
-const penalized = [];
+const senders: { time: number; sender: number }[] = [];
+const messages: { text: string; sender: number }[] = [];
+const warned: number[] = [];
+const penalized: number[] = [];
 const warnUser = async (context: MessageContext): Promise<void> => {
   warned.push(context.senderId);
-  const foundUser = await UserModel.findOne({ id: context.senderId }).exec();
+  const foundUser = await User.findOne({ vkId: context.senderId });
   const mention = createMention(context.senderId, foundUser.firstName);
   context.send(`${mention}, 🚨 ${t('SPAM_WARNING')}`);
 };
@@ -20,18 +20,15 @@ const penalizeUser = async (
   context: MessageContext,
   penalizeExpCount: number,
 ): Promise<void> => {
-  const foundUser = await UserModel.findOne({ id: context.senderId }).exec();
-  if (foundUser.exp > penalizeExpCount) {
+  const foundUser = await User.findOne({ vkId: context.senderId });
+  if (foundUser.xp > penalizeExpCount) {
     penalized.push(context.senderId);
     const mention = createMention(context.senderId, foundUser.firstName);
     await context.send(
       `${mention}, 🚨 ${t('SPAM_PENALIZE')}: ${penalizeExpCount} ${t('EXP')}`,
     );
-    await UserModel.findByIdAndUpdate(foundUser._id, {
-      $inc: {
-        exp: -penalizeExpCount,
-      },
-    }).exec();
+    foundUser.xp -= penalizeExpCount;
+    await foundUser.save();
   }
 };
 
@@ -40,15 +37,16 @@ export const antiSpam = async (
   next: () => any,
 ): Promise<void> => {
   const currentTime = Date.now();
-  const settings = config.get('antiSpam');
   senders.push({
     time: currentTime,
     sender: context.senderId,
   });
-  messages.push({
-    text: context.text,
-    sender: context.senderId,
-  });
+  if (!!context.text) {
+    messages.push({
+      text: context.text,
+      sender: context.senderId,
+    });
+  }
 
   let msgMatch = 0;
   for (const message of messages) {
@@ -61,37 +59,43 @@ export const antiSpam = async (
   }
 
   if (
-    msgMatch === settings.maxDuplicatesWarning &&
+    msgMatch === config.get('antiSpam.maxDuplicatesWarning') &&
     !warned.includes(context.senderId)
   ) {
     await warnUser(context);
   }
 
   if (
-    msgMatch === settings.maxDuplicatesPenalize &&
+    msgMatch === config.get('antiSpam.maxDuplicatesPenalize') &&
     !penalized.includes(context.senderId)
   ) {
-    await penalizeUser(context, settings.penalizeExpCount);
+    await penalizeUser(context, config.get('antiSpam.penalizeExpCount'));
   }
 
   let matched = 0;
   for (const key in senders) {
-    if (senders[key].time > currentTime - settings.interval) {
+    if (
+      senders[key].time >
+      currentTime - (config.get('antiSpam.interval') as number)
+    ) {
       matched++;
       if (
-        matched == settings.warnBuffer &&
+        matched == config.get('antiSpam.warnBuffer') &&
         !warned.includes(context.senderId)
       ) {
         await warnUser(context);
-      } else if (matched == settings.penalizeBuffer) {
+      } else if (matched == config.get('antiSpam.penalizeBuffer')) {
         if (!penalized.includes(context.senderId)) {
-          await penalizeUser(context, settings.penalizeExpCount);
+          await penalizeUser(context, config.get('antiSpam.penalizeExpCount'));
         }
       }
-    } else if (senders[key].time < currentTime - settings.interval) {
+    } else if (
+      senders[key].time <
+      currentTime - (config.get('antiSpam.interval') as number)
+    ) {
+      warned.splice(warned.indexOf(senders[key].sender));
+      penalized.splice(penalized.indexOf(senders[key].sender));
       senders.splice(+key);
-      warned.splice(warned.indexOf(senders[key]));
-      penalized.splice(penalized.indexOf(senders[key]));
     }
 
     if (messages.length >= 200) {

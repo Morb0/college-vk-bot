@@ -1,26 +1,25 @@
 import { MessageContext } from 'vk-io';
 
+import { Rank } from '../entity/Rank';
 import { Command } from '../interfaces/command';
-import { RankModel } from '../models/rank';
 import { t } from '../translate';
 
-const handler = async (context: MessageContext) => {
+const handler = async (context: MessageContext): Promise<void> => {
   if (process.env.RANKS_SHOW_DISABLED === '1') {
-    return await context.send(`🔒 ${t('RANKS_SHOW_DISABLED')}`);
+    await context.send(`🔒 ${t('RANKS_SHOW_DISABLED')}`);
+    return;
   }
 
-  const foundRanks = await RankModel.find()
-    .sort({ exp: 1 })
-    .exec();
+  const foundRanks = await Rank.find({ order: { xp: 'ASC' } });
 
   if (!foundRanks.length) {
-    throw new Error('No ranks created in db');
+    throw new Error('Not found ranks in db');
   }
 
-  const ranksList = foundRanks
-    .map(r => `▶ ${r.name} - ${r.exp} ${t('EXP')}`)
-    .join('\n');
-  await context.send(`📋 ${t('RANKS_TITLE')}:\n${ranksList}`);
+  await context.send(`
+    📋 ${t('RANKS_TITLE')}:
+    ${foundRanks.map(r => `▶ ${r.name} - ${r.xp} ${t('EXP')}`).join('\n')}
+  `);
 };
 
 const command: Command = {
