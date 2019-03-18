@@ -1,4 +1,4 @@
-import VK, { MessageContext } from 'vk-io';
+import { MessageContext } from 'vk-io';
 
 export interface Command {
   conditions: string[];
