@@ -59,8 +59,8 @@ export const accrualXP = async (context: MessageContext) => {
   }
 
   const receivedXP = calcXPCount(context);
+  await checkRankUp(context, foundUser, receivedXP);
+
   foundUser.xp += receivedXP;
   await foundUser.save();
-
-  await checkRankUp(context, foundUser, receivedXP);
 };
