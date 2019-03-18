@@ -1,5 +1,5 @@
 import config from 'config';
-import { MoreThanOrEqual } from 'typeorm';
+import { LessThanOrEqual } from 'typeorm';
 import { MessageContext } from 'vk-io';
 
 import { Rank } from '../entity/Rank';
@@ -25,11 +25,11 @@ const checkRankUp = async (
 ) => {
   const currentRank = await Rank.findOne({
     order: { xp: 'DESC' },
-    where: { xp: MoreThanOrEqual(user.xp) },
+    where: { xp: LessThanOrEqual(user.xp) },
   });
   const nextRank = await Rank.findOne({
     order: { xp: 'DESC' },
-    where: { xp: MoreThanOrEqual(user.xp + xpCount) },
+    where: { xp: LessThanOrEqual(user.xp + xpCount) },
   });
 
   if (!currentRank) {
