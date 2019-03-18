@@ -8,7 +8,7 @@ export const connectDb = () =>
   createConnection({
     type: 'postgres',
     url: process.env.DATABASE_URL,
-    entities: [__dirname + '/entity/*.ts'],
+    entities: [__dirname + '/entity/*{.ts,.js}'],
     synchronize: true,
     ssl: true,
   });
