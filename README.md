@@ -1,2 +1,3 @@
-# PolyTeh VK Bot
-VK bot having the ability to give useful information
+# College VK Bot
+
+Someday there will be information
