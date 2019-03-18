@@ -18,7 +18,7 @@ const handler = async (context: MessageContext): Promise<void> => {
 
   await context.send(`
     📋 ${t('RANKS_TITLE')}:
-    ${foundRanks.map(r => `▶ ${r.name} - ${r.xp} ${t('EXP')}`).join('\n')}
+    ${foundRanks.map(r => `▶ ${r.name} - ${r.xp} ${t('XP')}`).join('\n')}
   `);
 };
 

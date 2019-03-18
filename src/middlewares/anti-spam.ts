@@ -1,6 +1,7 @@
 import config from 'config';
 import { MessageContext } from 'vk-io';
 
+import { ChatXP } from '../entity/ChatXP';
 import { User } from '../entity/User';
 import { t } from '../translate';
 import { createMention } from '../utils';
@@ -11,7 +12,10 @@ const warned: number[] = [];
 const penalized: number[] = [];
 const warnUser = async (context: MessageContext): Promise<void> => {
   warned.push(context.senderId);
-  const foundUser = await User.findOne({ vkId: context.senderId });
+  const foundUser = await User.findOne(
+    { vkId: context.senderId },
+    { select: ['firstName'] },
+  );
   const mention = createMention(context.senderId, foundUser.firstName);
   context.send(`${mention}, 🚨 ${t('SPAM_WARNING')}`);
 };
@@ -20,15 +24,22 @@ const penalizeUser = async (
   context: MessageContext,
   penalizeExpCount: number,
 ): Promise<void> => {
-  const foundUser = await User.findOne({ vkId: context.senderId });
-  if (foundUser.xp > penalizeExpCount) {
+  const foundChatXP = await ChatXP.findOne({
+    vkId: context.senderId,
+    chatId: context.peerId,
+  });
+  if (foundChatXP.xp > penalizeExpCount) {
     penalized.push(context.senderId);
+    const foundUser = await User.findOne(
+      { vkId: context.senderId },
+      { select: ['firstName'] },
+    );
     const mention = createMention(context.senderId, foundUser.firstName);
     await context.send(
-      `${mention}, 🚨 ${t('SPAM_PENALIZE')}: ${penalizeExpCount} ${t('EXP')}`,
+      `${mention}, 🚨 ${t('SPAM_PENALIZE')}: ${penalizeExpCount} ${t('XP')}`,
     );
-    foundUser.xp -= penalizeExpCount;
-    await foundUser.save();
+    foundChatXP.xp -= penalizeExpCount;
+    await foundChatXP.save();
   }
 };
 

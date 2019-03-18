@@ -1,16 +1,16 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class User extends BaseEntity {
+export class ChatXP extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column()
   vkId: number;
 
   @Column()
-  firstName: string;
+  chatId: number;
 
-  @Column()
-  lastName: string;
+  @Column({ default: 0 })
+  xp: number;
 }

@@ -8,12 +8,13 @@
   "MY_RANK": "Your rank:",
   "MAINTENANCE": "Maintenance",
   "RANKS_TITLE": "Ranks list",
-  "EXP": "Exp",
+  "XP": "XP",
   "RANK_UP": "You have reached a new rank",
   "RANK_UP_REMAIN": "Before promotion",
   "RANK_MAX": "You have reached max rank",
   "RANKS_SHOW_DISABLED": "View ranks disabled",
   "SPAM_WARNING": "Please stop spam!",
   "SPAM_PENALIZE": "You were penalized for spam",
-  "RANK_TOP": "Top 10 by count of exp"
+  "RANK_TOP": "Top 10 by count of exp",
+  "ONLY_FROM_CHAT": "Command is available only from chat"
 }
