@@ -5,8 +5,8 @@ import { MessageContext } from 'vk-io';
 import { ChatXP } from '../entity/ChatXP';
 import { Rank } from '../entity/Rank';
 import { User } from '../entity/User';
-import { t } from '../translate';
-import { createMention } from '../utils';
+import { createMention } from '../utils/mention';
+import { t } from '../utils/translate';
 
 const calcXPCount = (context: MessageContext): number => {
   const messageTypeXP = config.get('messageTypeXP') as any;

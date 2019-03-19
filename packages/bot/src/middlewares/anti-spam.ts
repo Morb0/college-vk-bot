@@ -3,8 +3,8 @@ import { MessageContext } from 'vk-io';
 
 import { ChatXP } from '../entity/ChatXP';
 import { User } from '../entity/User';
-import { t } from '../translate';
-import { createMention } from '../utils';
+import { createMention } from '../utils/mention';
+import { t } from '../utils/translate';
 
 const senders: { time: number; sender: number }[] = [];
 const messages: { text: string; sender: number }[] = [];
@@ -43,10 +43,7 @@ const penalizeUser = async (
   }
 };
 
-export const antiSpam = async (
-  context: MessageContext,
-  next: () => any,
-): Promise<void> => {
+export const antiSpam = async (context: MessageContext): Promise<void> => {
   const currentTime = Date.now();
   senders.push({
     time: currentTime,
@@ -113,6 +110,4 @@ export const antiSpam = async (
       messages.shift();
     }
   }
-
-  await next();
 };

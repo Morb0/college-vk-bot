@@ -1,7 +1,7 @@
 import { MessageContext } from 'vk-io';
 
 import { Command } from '../interfaces/command';
-import { getRandomInt } from '../utils';
+import { getRandomInt } from '../utils/random-int';
 
 const handler = async (context: MessageContext) => {
   const members = await context.vk.api.messages.getConversationMembers({

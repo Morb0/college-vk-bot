@@ -2,8 +2,9 @@ import ms from 'ms';
 import { AudioAttachment, MessageContext } from 'vk-io';
 
 import { Command } from '../interfaces/command';
-import { t } from '../translate';
-import { getRandomInt, getRawImage } from '../utils';
+import { getRandomInt } from '../utils/random-int';
+import { getRawImage } from '../utils/requests';
+import { t } from '../utils/translate';
 
 let timeout: number;
 const handler = async (context: MessageContext) => {

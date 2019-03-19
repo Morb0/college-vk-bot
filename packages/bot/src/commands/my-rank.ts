@@ -4,7 +4,7 @@ import { MessageContext } from 'vk-io';
 import { ChatXP } from '../entity/ChatXP';
 import { Rank } from '../entity/Rank';
 import { Command } from '../interfaces/command';
-import { t } from '../translate';
+import { t } from '../utils/translate';
 
 const handler = async (context: MessageContext) => {
   if (!context.isChat) {

@@ -3,8 +3,8 @@ import sharp from 'sharp';
 import { MessageContext } from 'vk-io';
 
 import { Command } from '../interfaces/command';
-import { t } from '../translate';
-import { getCheerioContent, getRawImage } from '../utils';
+import { getCheerioContent, getRawImage } from '../utils/requests';
+import { t } from '../utils/translate';
 
 const timeouts: { [key: string]: number } = {};
 const handler = async (context: MessageContext) => {

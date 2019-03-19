@@ -2,7 +2,7 @@ import { MessageContext } from 'vk-io';
 
 import { Rank } from '../entity/Rank';
 import { Command } from '../interfaces/command';
-import { t } from '../translate';
+import { t } from '../utils/translate';
 
 const handler = async (context: MessageContext): Promise<void> => {
   if (process.env.RANKS_SHOW_DISABLED === '1') {
