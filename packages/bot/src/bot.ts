@@ -5,14 +5,14 @@ import { readdirSync } from 'fs';
 import { resolve } from 'path';
 import { MessageContext, VK } from 'vk-io';
 
-import { connectDb } from './db';
 import { Command } from './interfaces/command';
 import { accrualXP } from './middlewares/accrual-xp';
 import { antiSpam } from './middlewares/anti-spam';
 import { createChatXP } from './middlewares/create-chat-xp';
 import { maintenanceCheck } from './middlewares/maintenance';
 import { putUser } from './middlewares/put-user';
-import { t } from './translate';
+import { connectDb } from './utils/db';
+import { t } from './utils/translate';
 
 const vk = new VK();
 
@@ -49,7 +49,6 @@ updates.use(
 
 updates.on('message', putUser);
 updates.on('message', createChatXP);
-updates.on('message', antiSpam);
 
 const hearMiddleware = (handle: (context: MessageContext) => any) => (
   context: MessageContext,
@@ -96,6 +95,8 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
 
 updates.setHearFallbackHandler(async (context: MessageContext) => {
   try {
+    // Anti spam only for text messages
+    await antiSpam(context);
     // Accrual exp only for not command messages
     await accrualXP(context);
   } catch (err) {
