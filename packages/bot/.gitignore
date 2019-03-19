@@ -2,12 +2,6 @@
 # Created by https://www.gitignore.io/api/node,windows
 # Edit at https://www.gitignore.io/?templates=node,windows
 
-# VSCode
-.vscode
-
-# Test development
-_dev
-
 ### Node ###
 # Logs
 logs
@@ -15,6 +9,9 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Dist
+dist/
 
 # Runtime data
 pids

@@ -1,1 +1,1 @@
-bot: node dist/bot.js
+bot: cd packages/bot && node dist/bot.js
