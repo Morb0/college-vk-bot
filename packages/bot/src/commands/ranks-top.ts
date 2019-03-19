@@ -18,12 +18,13 @@ const handler = async (context: MessageContext) => {
     take: 10,
   });
 
+  let emojiNums = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
   let topList = '';
-  for (const chatXP of foundChatsXP) {
-    const foundUser = await User.findOne({ vkId: chatXP.vkId });
-    topList += `▶ ${foundUser.firstName} ${foundUser.lastName} - ${
-      chatXP.xp
-    } ${t('XP')}\n`;
+  for (const key in foundChatsXP) {
+    const foundUser = await User.findOne({ vkId: foundChatsXP[key].vkId });
+    topList += `${emojiNums[key]} ${foundUser.firstName} ${
+      foundUser.lastName
+    } - ${foundChatsXP[key].xp} ${t('XP')}\n`;
   }
 
   await context.send(`
