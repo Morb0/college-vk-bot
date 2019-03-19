@@ -26,7 +26,7 @@ const penalizeUser = async (
 ): Promise<void> => {
   const foundChatXP = await ChatXP.findOne({
     vkId: context.senderId,
-    chatId: context.peerId,
+    chatId: context.chatId,
   });
   if (foundChatXP.xp > penalizeExpCount) {
     penalized.push(context.senderId);

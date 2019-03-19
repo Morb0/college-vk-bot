@@ -6,15 +6,17 @@ export const createChatXP = async (
   context: MessageContext,
   next: () => any,
 ): Promise<void> => {
-  const foundChatXP = await ChatXP.findOne({
-    vkId: context.senderId,
-  });
-  if (!foundChatXP) {
-    // Add new chat
-    await ChatXP.create({
+  if (context.isChat) {
+    const foundChatXP = await ChatXP.findOne({
       vkId: context.senderId,
-      chatId: context.peerId,
-    }).save();
+    });
+    if (!foundChatXP) {
+      // Add new chat
+      await ChatXP.create({
+        vkId: context.senderId,
+        chatId: context.chatId,
+      }).save();
+    }
   }
 
   await next();

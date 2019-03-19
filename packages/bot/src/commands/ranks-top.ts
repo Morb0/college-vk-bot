@@ -13,7 +13,7 @@ const handler = async (context: MessageContext) => {
   }
 
   const foundChatsXP = await ChatXP.find({
-    where: { chatId: Equal(context.peerId) },
+    where: { chatId: Equal(context.chatId) },
     order: { xp: 'DESC' },
     take: 10,
   });

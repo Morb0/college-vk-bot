@@ -95,10 +95,13 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
 
 updates.setHearFallbackHandler(async (context: MessageContext) => {
   try {
-    // Anti spam only for text messages
-    await antiSpam(context);
-    // Accrual exp only for not command messages
-    await accrualXP(context);
+    // NOTE: XP add only from chat (conversations) messages (anti abuse)
+    if (context.isChat) {
+      // Anti spam only for text messages
+      await antiSpam(context);
+      // Accrual exp only for not command messages
+      await accrualXP(context);
+    }
   } catch (err) {
     console.error(err);
     await context.send(`❌ ${t('UNKNOWN_ERROR')}`);

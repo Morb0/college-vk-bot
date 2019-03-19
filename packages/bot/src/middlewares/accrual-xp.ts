@@ -1,5 +1,5 @@
 import config from 'config';
-import { LessThanOrEqual } from 'typeorm';
+import { createQueryBuilder, LessThanOrEqual } from 'typeorm';
 import { MessageContext } from 'vk-io';
 
 import { ChatXP } from '../entity/ChatXP';
@@ -32,14 +32,13 @@ const checkRankUp = async (
     order: { xp: 'DESC' },
     where: { xp: LessThanOrEqual(currentXP + gainsXP) },
   });
+  const { id: lastRankId } = await Rank.findOne({
+    order: { xp: 'DESC' },
+    select: ['id'],
+  });
 
   if (!currentRank) {
     throw new Error(`User ${context.senderId} rank not found`);
-  }
-
-  if (!nextRank) {
-    // MAX Level up
-    return;
   }
 
   if (currentRank.id !== nextRank.id) {
@@ -48,35 +47,40 @@ const checkRankUp = async (
       { select: ['firstName'] },
     );
     const mention = createMention(context.senderId, foundUser.firstName);
+
     await context.send(`${mention}, 🎉 ${t('RANK_UP')}: ${nextRank.name}`);
+
+    if (nextRank.id === lastRankId) {
+      await createQueryBuilder()
+        .update(ChatXP)
+        .set({
+          xp: () => 0,
+          stars: () => 'stars + 1',
+        })
+        .where({
+          vkId: context.senderId,
+          chatId: context.chatId,
+        })
+        .execute();
+      context.send(
+        `${mention}, 🎉 Вы достигли макс. ранга! Ваш опыт будет сброшен, но вы получите ⭐ ко всем последующим рангам`,
+      );
+      return;
+    }
   }
 };
 
 export const accrualXP = async (context: MessageContext) => {
-  // NOTE: XP add only from chat (conversations) messages (anti abuse)
-  if (!context.isChat) {
-    return;
-  }
-
   const gainsXP = calcXPCount(context);
   let currentXP: number;
 
   const foundChatXP = await ChatXP.findOne({
     vkId: context.senderId,
-    chatId: context.peerId,
+    chatId: context.chatId,
   });
-  if (!foundChatXP) {
-    currentXP = gainsXP;
-    await ChatXP.create({
-      vkId: context.senderId,
-      chatId: context.peerId,
-      xp: gainsXP,
-    }).save();
-  } else {
-    currentXP = foundChatXP.xp;
-    foundChatXP.xp += gainsXP;
-    await foundChatXP.save();
-  }
+  currentXP = foundChatXP.xp;
+  foundChatXP.xp += gainsXP;
+  await foundChatXP.save();
 
   await checkRankUp(context, currentXP, gainsXP);
 };
