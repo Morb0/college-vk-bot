@@ -3,11 +3,7 @@ import * as rp from 'request-promise';
 
 import { getBPCToken } from './anti-ddos';
 
-export const getRandomInt = (min: number = 1, max: number = 100): number => {
-  return Math.floor(Math.random() * (max - min)) + min;
-};
-
-export const getRawImage = async (url: string) => {
+export const getCollegeRawImage = async (url: string) => {
   const bpcToken = await getBPCToken();
   return rp.get(url, {
     timeout: 5000,
@@ -15,6 +11,13 @@ export const getRawImage = async (url: string) => {
     headers: {
       Cookie: `bpc=${bpcToken}`,
     },
+  });
+};
+
+export const getRawImage = async (url: string) => {
+  return rp.get(url, {
+    timeout: 5000,
+    encoding: null,
   });
 };
 
@@ -36,8 +39,4 @@ export const getXHRContent = (url: string) => {
     },
     json: true,
   });
-};
-
-export const createMention = (id: number, firstName: string): string => {
-  return `@id${id} (${firstName})`;
 };

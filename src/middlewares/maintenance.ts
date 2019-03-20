@@ -1,6 +1,6 @@
 import { MessageContext } from 'vk-io';
 
-import { t } from '../translate';
+import { t } from '../utils/translate';
 
 export const maintenanceCheck = async (
   context: MessageContext,

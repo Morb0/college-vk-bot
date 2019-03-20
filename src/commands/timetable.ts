@@ -3,8 +3,8 @@ import sharp from 'sharp';
 import { MessageContext } from 'vk-io';
 
 import { Command } from '../interfaces/command';
-import { t } from '../translate';
-import { getCheerioContent, getRawImage } from '../utils';
+import { getCheerioContent, getCollegeRawImage } from '../utils/requests';
+import { t } from '../utils/translate';
 
 const timeouts: { [key: string]: number } = {};
 const handler = async (context: MessageContext) => {
@@ -28,7 +28,7 @@ const handler = async (context: MessageContext) => {
     .attr('src');
 
   // Get image
-  const imgBuffer = await getRawImage(imageUrl);
+  const imgBuffer = await getCollegeRawImage(imageUrl);
 
   // Load to sharp
   const sharpImg = sharp(imgBuffer);

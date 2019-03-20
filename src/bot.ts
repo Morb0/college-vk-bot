@@ -5,14 +5,14 @@ import { readdirSync } from 'fs';
 import { resolve } from 'path';
 import { MessageContext, VK } from 'vk-io';
 
-import { connectDb } from './db';
 import { Command } from './interfaces/command';
 import { accrualXP } from './middlewares/accrual-xp';
 import { antiSpam } from './middlewares/anti-spam';
 import { createChatXP } from './middlewares/create-chat-xp';
 import { maintenanceCheck } from './middlewares/maintenance';
 import { putUser } from './middlewares/put-user';
-import { t } from './translate';
+import { connectDb } from './utils/db';
+import { t } from './utils/translate';
 
 const vk = new VK();
 
@@ -26,10 +26,8 @@ vk.setOptions({
   pollingGroupId: +process.env.GROUP_ID,
 });
 
-const { updates } = vk;
-
 // Skip outbox message and handle errors
-updates.use(
+vk.updates.use(
   async (
     context: MessageContext,
     next: (...args: any[]) => any,
@@ -39,17 +37,12 @@ updates.use(
       return;
     }
 
-    try {
-      await next();
-    } catch (err) {
-      console.error('Error:', err);
-    }
+    await next();
   },
 );
 
-updates.on('message', putUser);
-updates.on('message', createChatXP);
-updates.on('message', antiSpam);
+vk.updates.on('message', putUser);
+vk.updates.on('message', createChatXP);
 
 const hearMiddleware = (handle: (context: MessageContext) => any) => (
   context: MessageContext,
@@ -64,7 +57,7 @@ const hearCommand = (
   console.log(`Register conditions: ${conditions.join(', ')}`);
 
   // Using 'as any' - https://github.com/negezor/vk-io/issues/138
-  updates.hear(conditions as any, hearMiddleware(handle));
+  vk.updates.hear(conditions as any, hearMiddleware(handle));
 };
 
 // Load commands
@@ -80,12 +73,8 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
       try {
         await command.handler(context);
       } catch (err) {
-        if (err.code === 917) {
-          await context.send(`❌ ${t('ADMIN_PERMISSION_REQUIRED')}`);
-        } else {
-          console.error(err);
-          await context.send(`❌ ${t('COMMAND_UNKNOWN_ERROR')}`);
-        }
+        console.error(err);
+        await context.send(`❌ ${t('COMMAND_UNKNOWN_ERROR')}`);
       }
     });
   } catch (err) {
@@ -94,10 +83,15 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
   }
 });
 
-updates.setHearFallbackHandler(async (context: MessageContext) => {
+vk.updates.setHearFallbackHandler(async (context: MessageContext) => {
   try {
-    // Accrual exp only for not command messages
-    await accrualXP(context);
+    // NOTE: XP add only from chat (conversations) messages (anti abuse)
+    if (context.isChat) {
+      // Anti spam only for text messages
+      await antiSpam(context);
+      // Accrual exp only for not command messages
+      await accrualXP(context);
+    }
   } catch (err) {
     console.error(err);
     await context.send(`❌ ${t('UNKNOWN_ERROR')}`);
@@ -107,7 +101,7 @@ updates.setHearFallbackHandler(async (context: MessageContext) => {
 async function run() {
   await connectDb();
   console.log('Database connection successful');
-  await updates.startPolling();
+  await vk.updates.startPolling();
   console.log('Polling started');
 }
 

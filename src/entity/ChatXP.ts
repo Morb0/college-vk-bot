@@ -13,4 +13,7 @@ export class ChatXP extends BaseEntity {
 
   @Column({ default: 0 })
   xp: number;
+
+  @Column({ default: 0 })
+  stars: number;
 }

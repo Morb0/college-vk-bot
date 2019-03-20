@@ -4,7 +4,7 @@ import { MessageContext } from 'vk-io';
 import { ChatXP } from '../entity/ChatXP';
 import { Rank } from '../entity/Rank';
 import { Command } from '../interfaces/command';
-import { t } from '../translate';
+import { t } from '../utils/translate';
 
 const handler = async (context: MessageContext) => {
   if (!context.isChat) {
@@ -14,7 +14,7 @@ const handler = async (context: MessageContext) => {
 
   const foundChatXP = await ChatXP.findOne({
     vkId: context.senderId,
-    chatId: context.peerId,
+    chatId: context.chatId,
   });
   const currentRank = await Rank.findOne({
     order: { xp: 'DESC' },
@@ -23,14 +23,10 @@ const handler = async (context: MessageContext) => {
   const nextRank = await Rank.findOne({ id: currentRank.id + 1 });
 
   await context.send(`
-    ℹ ${t('MY_RANK')} ${currentRank.name}
-    ${
-      !nextRank
-        ? `🎉 ${t('RANK_MAX')}`
-        : `📈 ${t('RANK_UP_REMAIN')}: ${foundChatXP.xp}/${nextRank.xp} ${t(
-            'XP',
-          )}`
-    }
+    ℹ ${t('MY_RANK')} ${currentRank.name} ${new Array(
+    foundChatXP.stars + 1,
+  ).join('⭐')}
+    📈 ${t('RANK_UP_REMAIN')}: ${foundChatXP.xp}/${nextRank.xp} ${t('XP')}
   `);
 };
 
