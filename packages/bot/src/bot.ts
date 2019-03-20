@@ -79,12 +79,8 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
       try {
         await command.handler(context);
       } catch (err) {
-        if (err.code === 917) {
-          await context.send(`❌ ${t('ADMIN_PERMISSION_REQUIRED')}`);
-        } else {
-          console.error(err);
-          await context.send(`❌ ${t('COMMAND_UNKNOWN_ERROR')}`);
-        }
+        console.error(err);
+        await context.send(`❌ ${t('COMMAND_UNKNOWN_ERROR')}`);
       }
     });
   } catch (err) {
