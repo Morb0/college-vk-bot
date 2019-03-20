@@ -64,20 +64,39 @@ const handler = async (context: MessageContext) => {
   console.log(`New request with sessionId: ${sessionId}`);
   const channel = pusher.subscribe(sessionId);
 
-  channel.bind('img-in-progress', data => {
-    console.log(`Processing image ${data.id} started`);
-    context.send(`⚙️ ${t('WARP_PROCESSING')} (id: ${data.id})`);
+  channel.bind('img-in-progress', async data => {
+    try {
+      console.log(`Processing image ${data.id} started`);
+      context.send(`⚙️ ${t('WARP_PROCESSING')} (id: ${data.id})`);
+      // setTimeout(() => {
+      //   if (dis.$store.state.receivedImgs.find(it => it.id === data.id).url === '') {
+      //     dis.$store.commit("DELETE_IMG_IN_PROGRESS", data.id);
+      //     this.$toasted.global.error(`Image ${data.id} took too long to process. (Lambda timeout)`)
+      //   }
+      // }, ms('5m'))
+    } catch (err) {
+      console.error(err);
+      await context.send(`❌ ${t('COMMAND_UNKNOWN_ERROR')}`);
+    }
   });
 
   channel.bind('img-done', async data => {
-    console.log(`Image ${data.id} complete (url: ${data.url})`);
-    const processedPhoto = await rp.get(data.url, {
-      encoding: null,
-      timeout: ms('10s'),
-    });
-    context.sendPhoto(processedPhoto, {
-      message: `✔️ ${t('WARP_SUCCESS')} (id: ${data.id})`,
-    });
+    try {
+      console.log(`Image ${data.id} complete (url: ${data.url})`);
+      const processedPhoto = await rp.get(data.url, {
+        encoding: null,
+        timeout: ms('10s'),
+      });
+      const attachmentPhoto = await context.vk.upload.messagePhoto({
+        source: processedPhoto,
+      });
+      context.send(`✔️ ${t('WARP_SUCCESS')} (id: ${data.id})`, {
+        attachment: attachmentPhoto,
+      });
+    } catch (err) {
+      console.error(err);
+      await context.send(`❌ ${t('COMMAND_UNKNOWN_ERROR')}`);
+    }
   });
 
   // Send image
@@ -102,26 +121,6 @@ const handler = async (context: MessageContext) => {
       console.error('Warp image error', err);
       context.send(`❌ ${t('COMMAND_UNKNOWN_ERROR')}`);
     });
-
-  // Wait result
-  // channel.bind('img-done', async data => {
-  //   console.log(`Image ${data.id} complete! (url: ${data.url})`);
-  //   const processedPhoto = await rp.get(data.url);
-  //   const
-  //   context.send(`✔️ ${t('WARP_SUCCESS')} (id: ${data.id})`);
-  // });
-
-  // channel.bind('img-in-progress', data => {
-  //   console.log(`Processing image ${data.id} started.`);
-  //   context.send(`⚙️ ${t('WARP_PROCESSING')} (id: ${data.id})`);
-
-  //   // setTimeout(() => {
-  //   //   if (dis.$store.state.receivedImgs.find(it => it.id === data.id).url === '') {
-  //   //     dis.$store.commit("DELETE_IMG_IN_PROGRESS", data.id);
-  //   //     this.$toasted.global.error(`Image ${data.id} took too long to process. (Lambda timeout)`)
-  //   //   }
-  //   // }, ms('5m'))
-  // });
 };
 
 const command: Command = {
