@@ -16,5 +16,9 @@
   "RANK_TOP": "Top 10 by count of exp",
   "ONLY_FROM_CHAT": "Command is available only from chat",
   "NO_ACTIVE_USER": "No active users",
-  "FACT": "Fact"
+  "FACT": "Fact",
+  "PHOTO_NOT_FOUND": "No photos found in the message",
+  "FIRST_FORWARD_PHOTO": "The first photo from the forwarded message will be used",
+  "WARP_PROCESSING": "Photo processing. This process can take up to 5 minutes",
+  "WARP_SUCCESS": "Photo successfully processed"
 }
