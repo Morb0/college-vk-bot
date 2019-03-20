@@ -15,5 +15,6 @@
   "SPAM_PENALIZE": "You were penalized for spam",
   "RANK_TOP": "Top 10 by count of exp",
   "ONLY_FROM_CHAT": "Command is available only from chat",
-  "NO_ACTIVE_USER": "No active users"
+  "NO_ACTIVE_USER": "No active users",
+  "FACT": "Fact"
 }
