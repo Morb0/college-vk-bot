@@ -26,10 +26,8 @@ vk.setOptions({
   pollingGroupId: +process.env.GROUP_ID,
 });
 
-const { updates } = vk;
-
 // Skip outbox message and handle errors
-updates.use(
+vk.updates.use(
   async (
     context: MessageContext,
     next: (...args: any[]) => any,
@@ -39,16 +37,12 @@ updates.use(
       return;
     }
 
-    try {
-      await next();
-    } catch (err) {
-      console.error('Error:', err);
-    }
+    await next();
   },
 );
 
-updates.on('message', putUser);
-updates.on('message', createChatXP);
+vk.updates.on('message', putUser);
+vk.updates.on('message', createChatXP);
 
 const hearMiddleware = (handle: (context: MessageContext) => any) => (
   context: MessageContext,
@@ -63,7 +57,7 @@ const hearCommand = (
   console.log(`Register conditions: ${conditions.join(', ')}`);
 
   // Using 'as any' - https://github.com/negezor/vk-io/issues/138
-  updates.hear(conditions as any, hearMiddleware(handle));
+  vk.updates.hear(conditions as any, hearMiddleware(handle));
 };
 
 // Load commands
@@ -89,7 +83,7 @@ readdirSync(resolve(__dirname, 'commands')).forEach(async file => {
   }
 });
 
-updates.setHearFallbackHandler(async (context: MessageContext) => {
+vk.updates.setHearFallbackHandler(async (context: MessageContext) => {
   try {
     // NOTE: XP add only from chat (conversations) messages (anti abuse)
     if (context.isChat) {
@@ -107,7 +101,7 @@ updates.setHearFallbackHandler(async (context: MessageContext) => {
 async function run() {
   await connectDb();
   console.log('Database connection successful');
-  await updates.startPolling();
+  await vk.updates.startPolling();
   console.log('Polling started');
 }
 
