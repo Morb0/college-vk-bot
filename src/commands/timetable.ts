@@ -47,8 +47,13 @@ const handler = async (context: MessageContext) => {
     .resize(258, 354) // Resize x2
     .toBuffer();
 
-  // Send message
-  context.sendPhoto(modifiedImgBuffer);
+  // Send photo
+  const attachmentPhoto = await context.vk.upload.messagePhoto({
+    source: modifiedImgBuffer,
+  });
+  context.send({
+    attachment: attachmentPhoto,
+  });
 };
 
 const command: Command = {
