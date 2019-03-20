@@ -8,6 +8,9 @@
 # Test development
 _dev
 
+# Dist
+dist
+
 ### Node ###
 # Logs
 logs
