@@ -1,6 +1,7 @@
 import ms from 'ms';
 import Pusher from 'pusher-js';
 import * as rp from 'request-promise';
+import uuidv4 from 'uuid/v4';
 import { MessageContext, MessageForward, MessageForwardsCollection, PhotoAttachment } from 'vk-io';
 
 import { Command } from '../interfaces/command';
@@ -52,7 +53,7 @@ const handler = async (context: MessageContext) => {
     context.send(`⚠️ ${t('FIRST_FORWARD_PHOTO')}`);
   }
 
-  const sessionId = `${context.peerId}_${context.id}`;
+  const sessionId = uuidv4();
 
   // Get image
   const imageUrl = attachedPhotos[0].mediumPhoto;
