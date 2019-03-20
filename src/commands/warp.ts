@@ -15,8 +15,8 @@ const pusher = new Pusher(APP_KEY, {
   encrypted: true,
 });
 const IS_IN_PERCENTS = 1;
-const HEIGHT = 50;
-const WIDTH = 50;
+const HEIGHT = 40;
+const WIDTH = 40;
 const SPEEDUP = 1;
 
 const handler = async (context: MessageContext) => {
