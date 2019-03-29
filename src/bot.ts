@@ -55,9 +55,7 @@ const hearCommand = (
   handle: (context: MessageContext) => any,
 ) => {
   console.log(`Register conditions: ${conditions.join(', ')}`);
-
-  // Using 'as any' - https://github.com/negezor/vk-io/issues/138
-  vk.updates.hear(conditions as any, hearMiddleware(handle));
+  vk.updates.hear(conditions, hearMiddleware(handle));
 };
 
 // Load commands
