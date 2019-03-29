@@ -24,10 +24,11 @@ const handler = async (context: MessageContext) => {
     const foundUser = await User.findOne({ vkId: foundChatsXP[key].vkId });
     topList += `${emojiNums[key]} ${foundUser.firstName} ${
       foundUser.lastName
-    }${!!foundChatsXP[key].stars ?
-      new Array(foundChatsXP[key].stars + 1).join('⭐') + ' ' : ''}- ${
-      foundChatsXP[key].xp
-    } ${t('XP')}\n`;
+    } ${
+      !!foundChatsXP[key].stars
+        ? new Array(foundChatsXP[key].stars + 1).join('⭐') + ' '
+        : ''
+    }- ${foundChatsXP[key].xp} ${t('XP')}\n`;
   }
 
   await context.send(`
