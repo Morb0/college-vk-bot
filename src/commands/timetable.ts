@@ -20,36 +20,45 @@ const handler = async (context: MessageContext) => {
   timeouts[context.peerId] = Date.now() + ms('1m');
 
   // Get image url
-  const $ = await getCheerioContent('http://simfpolyteh.ru/raspisanie');
+  const fakeImage = !!process.env.FAKE_TT_IMAGE;
+  let imageUrl;
 
-  const imageUrl = $('.page_raspis_block_img')
-    .find('img')
-    .first()
-    .attr('src');
+  if (fakeImage) {
+    imageUrl = process.env.FAKE_TT_IMAGE;
+  } else {
+    const $ = await getCheerioContent('http://simfpolyteh.ru/raspisanie');
+    imageUrl = $('.page_raspis_block_img')
+      .find('img')
+      .first()
+      .attr('src');
+  }
 
   // Get image
   const imgBuffer = await getCollegeRawImage(imageUrl);
 
-  // Load to sharp
-  const sharpImg = sharp(imgBuffer);
+  let modifiedImgBuffer;
+  if (!fakeImage) {
+    // Load to sharp
+    const sharpImg = sharp(imgBuffer);
 
-  // Check image size
-  const imgInfo = await sharpImg.metadata();
+    // Check image size
+    const imgInfo = await sharpImg.metadata();
 
-  // Modify image
-  const modifiedImgBuffer = await sharpImg
-    .extract({
-      left: 0,
-      top: imgInfo.height - 177, // calculated image size
-      width: 129,
-      height: 177,
-    }) // Extract table
-    .resize(258, 354) // Resize x2
-    .toBuffer();
+    // Modify image
+    modifiedImgBuffer = await sharpImg
+      .extract({
+        left: 0,
+        top: imgInfo.height - 177, // calculated image size
+        width: 129,
+        height: 177,
+      }) // Extract table
+      .resize(258, 354) // Resize x2
+      .toBuffer();
+  }
 
   // Send photo
   const attachmentPhoto = await context.vk.upload.messagePhoto({
-    source: modifiedImgBuffer,
+    source: fakeImage ? imgBuffer : modifiedImgBuffer,
   });
   context.send({
     attachment: attachmentPhoto,
