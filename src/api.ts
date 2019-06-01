@@ -4,6 +4,8 @@ import sharp from 'sharp';
 
 import { getCheerioContent, getCollegeRawImage } from './utils/requests';
 
+const PORT = process.env.PORT || 3000;
+
 const express = require('express');
 
 const app = express();
@@ -57,4 +59,4 @@ app.get('/api/timetable', async (_req: Request, res: Response) => {
   res.end(modifiedImgBuffer, 'binary');
 });
 
-app.listen(3000, () => console.log('listening on *:3000'));
+app.listen(PORT, () => console.log(`listening on *:${PORT}`));
