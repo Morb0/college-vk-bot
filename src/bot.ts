@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import 'dotenv/config';
+import './api';
 
 import { readdirSync } from 'fs';
 import { resolve } from 'path';
