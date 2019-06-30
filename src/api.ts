@@ -1,8 +1,10 @@
+import './utils/anti-sleep';
+
 import { Request, Response } from 'express';
+import { getCheerioContent, getCollegeRawImage } from './utils/requests';
+
 import ms from 'ms';
 import sharp from 'sharp';
-
-import { getCheerioContent, getCollegeRawImage } from './utils/requests';
 
 const PORT = process.env.PORT || 3000;
 
