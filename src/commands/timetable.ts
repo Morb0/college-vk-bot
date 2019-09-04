@@ -1,9 +1,9 @@
-import ms from 'ms';
-import sharp from 'sharp';
-import { MessageContext } from 'vk-io';
+import { getCheerioContent, getCollegeRawImage } from '../utils/requests';
 
 import { Command } from '../interfaces/command';
-import { getCheerioContent, getCollegeRawImage } from '../utils/requests';
+import { MessageContext } from 'vk-io';
+import ms from 'ms';
+import sharp from 'sharp';
 import { t } from '../utils/translate';
 
 const timeouts: { [key: string]: number } = {};
@@ -47,7 +47,7 @@ const handler = async (context: MessageContext) => {
     // Modify image
     modifiedImgBuffer = await sharpImg
       .extract({
-        left: 0,
+        left: 640,
         top: imgInfo.height - 177, // calculated image size
         width: 129,
         height: 177,
