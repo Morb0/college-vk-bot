@@ -45,7 +45,7 @@ app.get('/api/timetable', async (_req: Request, res: Response) => {
   // Modify image
   const modifiedImgBuffer = await sharpImg
     .extract({
-      left: 0,
+      left: 640,
       top: imgInfo.height - 177, // calculated image size
       width: 129,
       height: 177,
