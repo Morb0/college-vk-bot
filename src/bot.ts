@@ -7,7 +7,7 @@ import { MessageContext, VK } from 'vk-io';
 
 import { Command } from './interfaces/command';
 import { accrualXP } from './middlewares/accrual-xp';
-import { antiSpam } from './middlewares/anti-spam';
+// import { antiSpam } from './middlewares/anti-spam';
 import { createChatXP } from './middlewares/create-chat-xp';
 import { maintenanceCheck } from './middlewares/maintenance';
 import { putUser } from './middlewares/put-user';
