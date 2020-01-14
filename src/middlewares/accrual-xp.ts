@@ -48,7 +48,9 @@ const checkRankUp = async (
     );
     const mention = createMention(context.senderId, foundUser.firstName);
 
-    await context.send(`${mention}, 🎉 ${t('RANK_UP')}: ${nextRank.name}`);
+    if (process.env.RANK_UP_MESSAGE_DISABLED !== '1') {
+      await context.send(`${mention}, 🎉 ${t('RANK_UP')}: ${nextRank.name}`);
+    }
 
     if (nextRank.id === lastRankId) {
       await createQueryBuilder()
@@ -62,9 +64,13 @@ const checkRankUp = async (
           chatId: context.chatId,
         })
         .execute();
-      context.send(
-        `${mention}, 🎉 Вы достигли макс. ранга! Ваш опыт будет сброшен, но вы получите ⭐ ко всем последующим рангам`,
-      );
+
+      if (process.env.RANK_UP_MESSAGE_DISABLED !== '1') {
+        context.send(
+          `${mention}, 🎉 Вы достигли макс. ранга! Ваш опыт будет сброшен, но вы получите ⭐ ко всем последующим рангам`,
+        );
+      }
+
       return;
     }
   }
