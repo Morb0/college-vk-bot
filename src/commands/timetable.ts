@@ -1,6 +1,6 @@
-import { Command } from '../classes/command';
+import { Command } from '../core/command/command';
 import { MessageContext } from 'vk-io';
-import { TimetableRetriever } from '../classes/timetable-retriever';
+import { TimetableRetriever } from '../utils/timetable-retriever';
 
 export class TimetableCommand extends Command {
   private readonly timetableRetriever: TimetableRetriever;

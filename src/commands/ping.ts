@@ -1,4 +1,4 @@
-import { Command } from '../classes/command';
+import { Command } from '../core/command/command';
 import { MessageContext } from 'vk-io';
 
 export class PingCommand extends Command {

@@ -1,5 +1,5 @@
 import VK from 'vk-io';
-import { CommandHandler } from './command-handler';
+import { CommandHandler } from './command/command-handler';
 
 export class Bootstrap {
   private readonly vk: VK;
