@@ -10,6 +10,8 @@
     "serve": "node dist/index.js",
     "watch": "nodemon --watch src -e ts --exec ts-node src/bot.ts",
     "debug": "nodemon --watch src -e ts --exec ts-node src/bot.ts --inspect",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
     "test": "jest",
     "test:cov": "jest --coverage"
   },
@@ -32,11 +34,21 @@
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "@typescript-eslint/parser": "^2.20.0",
     "eslint": "^6.8.0",
+    "husky": "^4.2.3",
     "jest": "^25.1.0",
+    "lint-staged": "^10.0.7",
     "nodemon": "^2.0.2",
     "rimraf": "^3.0.2",
     "ts-jest": "^25.2.1",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache --fix"
   }
 }
