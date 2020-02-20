@@ -9,7 +9,7 @@ export class CommandLoader {
   private instances: Command[] = [];
   
   constructor() {
-    this.commandsDirPath = path.resolve(__dirname, '../commands');
+    this.commandsDirPath = path.resolve(__dirname, '../../commands');
   }
   
   getAll(): Command[] {
