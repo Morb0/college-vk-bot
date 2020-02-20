@@ -4,9 +4,8 @@ import sharp, { Region } from 'sharp';
 
 export class TimetableRetriever {
   private readonly HTML_IMG_SELECTOR = '.page_raspis_block_img img';
-  private readonly LEFT_OFFSET = 630;
-  private readonly TOP_OFFSET = 177;
-  private readonly REGION_WIDTH = 219;
+  private readonly LEFT_OFFSET = 639;
+  private readonly REGION_WIDTH = 129;
   private readonly REGION_HEIGHT = 177;
   
   public async getTimetableRegion(): Promise<Buffer> {
@@ -23,14 +22,14 @@ export class TimetableRetriever {
     
     return sharpImg
       .extract(this.getRegionExtractOptions(metadata.height))
-      .resize(metadata.width * 2, metadata.height * 2) // Resize x2
+      .resize(this.REGION_WIDTH * 2, this.REGION_HEIGHT * 2) // Resize x2
       .toBuffer();
   }
   
   private getRegionExtractOptions(imgHeight: number): Region {
     return {
       left: this.LEFT_OFFSET,
-      top: imgHeight - this.TOP_OFFSET,
+      top: imgHeight - this.REGION_HEIGHT,
       width: this.REGION_WIDTH,
       height: this.REGION_HEIGHT,
     };
