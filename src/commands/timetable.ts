@@ -4,7 +4,7 @@ import { TimetableRetriever } from '../utils/timetable-retriever';
 
 export class TimetableCommand extends Command {
   private readonly timetableRetriever: TimetableRetriever;
-  
+
   constructor() {
     super('timetable', ['tt', 'timetable']);
     this.timetableRetriever = new TimetableRetriever();
@@ -15,7 +15,7 @@ export class TimetableCommand extends Command {
     const attachment = await ctx.vk.upload.messagePhoto({
       source: timetableImg,
     });
-    await ctx.send('Pepega', {
+    await ctx.send({
       attachment,
     });
   }
