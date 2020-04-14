@@ -1,10 +1,4 @@
-import MessageContext from 'vk-io/lib/structures/contexts/message';
-
-class CommandUtilities {
-  static mapCommandPrefix(arr: string[]): string[] {
-    return arr.map(a => (process.env.CMD_PREFIX || '/') + a);
-  }
-}
+import { MessageContext } from 'vk-io';
 
 export abstract class Command {
   protected constructor(
@@ -21,7 +15,11 @@ export abstract class Command {
   }
   
   public getAliasesWithPrefix(): string[] {
-    return CommandUtilities.mapCommandPrefix(this.aliases);
+    return Command.mapCommandPrefix(this.aliases);
+  }
+
+  static mapCommandPrefix(arr: string[]): string[] {
+    return arr.map(a => (process.env.CMD_PREFIX || '/') + a);
   }
   
   abstract execute(ctx: MessageContext): void | Promise<void>;

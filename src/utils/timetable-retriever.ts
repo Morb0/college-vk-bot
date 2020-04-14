@@ -4,9 +4,9 @@ import sharp, { Region } from 'sharp';
 
 export class TimetableRetriever {
   private readonly HTML_IMG_SELECTOR = '.page_raspis_block_img img';
-  private readonly LEFT_OFFSET = 639;
-  private readonly REGION_WIDTH = 129;
-  private readonly REGION_HEIGHT = 177;
+  private readonly LEFT_OFFSET = 672;
+  private readonly REGION_WIDTH = 116;
+  private readonly REGION_HEIGHT = 161;
   
   public async getTimetableRegion(): Promise<Buffer> {
     const fullTimetable = await this.getTimetablesImage();
