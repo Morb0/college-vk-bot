@@ -13,7 +13,7 @@ export class Bootstrap {
     this.commandHandler = new CommandHandler(this.vk);
   }
   
-  public boot(): void {
+  boot(): void {
     this.commandHandler.loadAndHandle();
     this.vk.updates.startPolling();
     console.log('Bot started');

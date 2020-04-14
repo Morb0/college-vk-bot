@@ -20,25 +20,25 @@ export abstract class Command {
   ) {
   }
 
-  public getName(): string {
+  getName(): string {
     return this.name;
   }
 
-  public getAliases(): string[] {
+  getAliases(): string[] {
     return this.aliases;
   }
 
-  public getAliasesWithPrefix(): string[] {
+  getAliasesWithPrefix(): string[] {
     return Command.mapCommandPrefix(this.aliases);
   }
 
-  public getHelpCategory(): CommandHelpCategory {
+  getHelpCategory(): CommandHelpCategory {
     return this.helpCategory;
   }
   
-  public getHelpDescription(): string {
+  getHelpDescription(): string {
     return this.helpDescription;
   }
-
+  
   abstract execute(ctx: MessageContext): void | Promise<void>;
 }
