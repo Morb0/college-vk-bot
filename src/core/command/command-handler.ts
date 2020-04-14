@@ -6,16 +6,16 @@ export class CommandHandler {
   private readonly commandLoader: CommandLoader;
   
   constructor(private readonly vk: VK) {
-    this.commandLoader = new CommandLoader();
+    this.commandLoader = CommandLoader.getInstance();
   }
   
   async loadAndHandle(): Promise<void> {
     await this.commandLoader.load();
     for (const cmd of this.commandLoader.getAll())
-      this.hearCommand(cmd);
+      this.handleCommand(cmd);
   }
   
-  private hearCommand(cmd: Command): void {
+  private handleCommand(cmd: Command): void {
     console.log(`Hear command: ${cmd.getName()}`);
     this.vk.updates.hear(cmd.getAliasesWithPrefix(), async ctx => {
       try {

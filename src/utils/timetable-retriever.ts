@@ -3,10 +3,17 @@ import cheerio from 'cheerio';
 import sharp, { Region } from 'sharp';
 
 export class TimetableRetriever {
-  private readonly HTML_IMG_SELECTOR = '.page_raspis_block_img img';
-  private readonly LEFT_OFFSET = 672;
-  private readonly REGION_WIDTH = 116;
-  private readonly REGION_HEIGHT = 161;
+  private readonly HTML_IMG_SELECTOR: string;
+  private readonly LEFT_OFFSET: number;
+  private readonly REGION_WIDTH: number;
+  private readonly REGION_HEIGHT: number;
+  
+  constructor() {
+    this.HTML_IMG_SELECTOR = process.env.HTML_IMG_SELECTOR!;
+    this.LEFT_OFFSET = +process.env.LEFT_OFFSET!;
+    this.REGION_WIDTH = +process.env.REGION_WIDTH!;
+    this.REGION_HEIGHT = +process.env.REGION_HEIGHT!;
+  }
   
   public async getTimetableRegion(): Promise<Buffer> {
     const fullTimetable = await this.getTimetablesImage();

@@ -1,9 +1,9 @@
-import { Command } from '../core/command/command';
+import { Command, CommandHelpCategory } from '../core/command/command';
 import { MessageContext } from 'vk-io';
 
-export class PingCommand extends Command {
+class PingCommand extends Command {
   constructor() {
-    super('ping', ['ping']);
+    super('ping', ['ping'], CommandHelpCategory.Other, 'Проверяет статус бота');
   }
   
   execute(ctx: MessageContext): void {

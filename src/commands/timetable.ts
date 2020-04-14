@@ -1,12 +1,12 @@
-import { Command } from '../core/command/command';
+import { Command, CommandHelpCategory } from '../core/command/command';
 import { MessageContext } from 'vk-io';
 import { TimetableRetriever } from '../utils/timetable-retriever';
 
-export class TimetableCommand extends Command {
+class TimetableCommand extends Command {
   private readonly timetableRetriever: TimetableRetriever;
 
   constructor() {
-    super('timetable', ['tt', 'timetable']);
+    super('timetable', ['tt', 'timetable'], CommandHelpCategory.Timetable, 'Актуальное расписание группы');
     this.timetableRetriever = new TimetableRetriever();
   }
 

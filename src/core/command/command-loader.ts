@@ -3,13 +3,20 @@ import path from 'path';
 import { Command } from './command';
 
 export class CommandLoader {
+  private static instance: CommandLoader;
   private readonly commandsDirPath: string;
   private filenames: string[] = [];
   private promises: Promise<Command>[] = [];
   private instances: Command[] = [];
   
-  constructor() {
+  private constructor() {
     this.commandsDirPath = path.resolve(__dirname, '../../commands');
+  }
+  
+  static getInstance(): CommandLoader {
+    if (!this.instance)
+      this.instance = new CommandLoader();
+    return this.instance;
   }
   
   getAll(): Command[] {
