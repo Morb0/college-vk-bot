@@ -9,10 +9,10 @@ export class TimetableRetriever {
   private readonly REGION_HEIGHT: number;
   
   constructor() {
-    this.HTML_IMG_SELECTOR = process.env.HTML_IMG_SELECTOR!;
-    this.LEFT_OFFSET = +process.env.LEFT_OFFSET!;
-    this.REGION_WIDTH = +process.env.REGION_WIDTH!;
-    this.REGION_HEIGHT = +process.env.REGION_HEIGHT!;
+    this.HTML_IMG_SELECTOR = process.env.TIMETABLE_HTML_IMG_SELECTOR!;
+    this.LEFT_OFFSET = +process.env.TIMETABLE_LEFT_OFFSET!;
+    this.REGION_WIDTH = +process.env.TIMETABLE_REGION_WIDTH!;
+    this.REGION_HEIGHT = +process.env.TIMETABLE_REGION_HEIGHT!;
   }
   
   public async getTimetableRegion(): Promise<Buffer> {
@@ -42,7 +42,7 @@ export class TimetableRetriever {
     };
   }
   
-  private async getTimetablesImage(): Promise<Buffer> {
+  public async getTimetablesImage(): Promise<Buffer> {
     const imageURL = await this.getTimetablesURL();
     return fetch(imageURL)
       .then(res => res.buffer());
