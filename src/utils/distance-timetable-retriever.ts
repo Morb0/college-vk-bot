@@ -50,7 +50,7 @@ export class DistanceTimetableRetriever {
   private extractScheduleFromDocumentByOffset(content: string): string[] {
     const $ = cheerio.load(content);
     const $rows = $('tbody tr');
-    const curDayOfWeek = (new Date()).getDay();
+    const curDayOfWeek = new Date(new Date().toLocaleString('en-US', {timeZone: 'Europe/Moscow'})).getDay();
     const schedule = [];
     
     for (let i = 0; i < 5; i++) {
