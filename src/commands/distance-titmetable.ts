@@ -6,7 +6,7 @@ class TimetableCommand extends Command {
   private readonly timetableRetriever: DistanceTimetableRetriever;
 
   constructor() {
-    super('distance-timetable', ['dtt', 'dist-timetable'], CommandHelpCategory.Timetable, 'Актуальное расписание группы');
+    super('distance-timetable', ['dtt', 'dist-timetable'], CommandHelpCategory.Timetable, 'Актуальное дистанционное расписание группы');
     this.timetableRetriever = new DistanceTimetableRetriever();
   }
 
