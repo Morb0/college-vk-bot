@@ -11,7 +11,7 @@ class TimetableFullCommand extends Command {
   }
 
   async execute(ctx: MessageContext): Promise<void> {
-    const timetableImg = await this.timetableRetriever.getTimetablesImage();
+    const timetableImg = await this.timetableRetriever.getTimetableImage();
     const attachment = await ctx.vk.upload.messagePhoto({
       source: timetableImg,
     });
