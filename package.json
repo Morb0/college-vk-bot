@@ -20,6 +20,7 @@
     "cheerio": "^1.0.0-rc.3",
     "dotenv": "^8.2.0",
     "glob": "^7.1.6",
+    "iconv-lite": "^0.5.1",
     "node-fetch": "^2.6.0",
     "sharp": "^0.24.1",
     "vk-io": "4.0.0-rc.26"
