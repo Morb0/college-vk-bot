@@ -21,7 +21,7 @@ export class CommandHandler {
       try {
         await cmd.execute(ctx);
       } catch (e) {
-        console.error('Failed to send execute command:', e.message);
+        console.error('Failed to execute command:', e.message);
         await ctx.send('❌ При попытки выполнения команды произошла неизвестная ошибка');
       }
     });

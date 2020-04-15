@@ -3,20 +3,22 @@ import cheerio from 'cheerio';
 import sharp, { Region } from 'sharp';
 
 export class TimetableRetriever {
-  private readonly HTML_IMG_SELECTOR: string;
-  private readonly LEFT_OFFSET: number;
-  private readonly REGION_WIDTH: number;
-  private readonly REGION_HEIGHT: number;
+  private readonly pageUrl: string;
+  private readonly htmlImgSelector: string;
+  private readonly leftOffset: number;
+  private readonly regionWidth: number;
+  private readonly regionHeight: number;
   
   constructor() {
-    this.HTML_IMG_SELECTOR = process.env.TIMETABLE_HTML_IMG_SELECTOR!;
-    this.LEFT_OFFSET = +process.env.TIMETABLE_LEFT_OFFSET!;
-    this.REGION_WIDTH = +process.env.TIMETABLE_REGION_WIDTH!;
-    this.REGION_HEIGHT = +process.env.TIMETABLE_REGION_HEIGHT!;
+    this.pageUrl = process.env.TIMETABLE_PAGE_URL!;
+    this.htmlImgSelector = process.env.TIMETABLE_HTML_IMG_SELECTOR!;
+    this.leftOffset = +process.env.TIMETABLE_LEFT_OFFSET!;
+    this.regionWidth = +process.env.TIMETABLE_REGION_WIDTH!;
+    this.regionHeight = +process.env.TIMETABLE_REGION_HEIGHT!;
   }
   
   public async getTimetableRegion(): Promise<Buffer> {
-    const fullTimetable = await this.getTimetablesImage();
+    const fullTimetable = await this.getTimetableImage();
     return this.extractAndResizeRegionFromImage(fullTimetable);
   }
   
@@ -29,33 +31,33 @@ export class TimetableRetriever {
     
     return sharpImg
       .extract(this.getRegionExtractOptions(metadata.height))
-      .resize(this.REGION_WIDTH * 2, this.REGION_HEIGHT * 2) // Resize x2
+      .resize(this.regionWidth * 2, this.regionHeight * 2) // Resize x2
       .toBuffer();
   }
   
   private getRegionExtractOptions(imgHeight: number): Region {
     return {
-      left: this.LEFT_OFFSET,
-      top: imgHeight - this.REGION_HEIGHT,
-      width: this.REGION_WIDTH,
-      height: this.REGION_HEIGHT,
+      left: this.leftOffset,
+      top: imgHeight - this.regionHeight,
+      width: this.regionWidth,
+      height: this.regionHeight,
     };
   }
   
-  public async getTimetablesImage(): Promise<Buffer> {
-    const imageURL = await this.getTimetablesURL();
+  public async getTimetableImage(): Promise<Buffer> {
+    const imageURL = await this.getTimetableURL();
     return fetch(imageURL)
       .then(res => res.buffer());
   }
   
-  private async getTimetablesURL(): Promise<string> {
+  private async getTimetableURL(): Promise<string> {
     const pageHTML = await this.getPageHTML();
     return this.extractImageURLfromHTML(pageHTML);
   }
   
   private extractImageURLfromHTML(html: string): string {
     const $ = cheerio.load(html);
-    const imageURL = $(this.HTML_IMG_SELECTOR).attr('src');
+    const imageURL = $(this.htmlImgSelector).attr('src');
     if (!imageURL)
       throw new Error('Image url not in html');
     
@@ -63,10 +65,7 @@ export class TimetableRetriever {
   }
   
   private getPageHTML(): Promise<string> {
-    if (!process.env.TIMETABLE_PAGE_URL)
-      throw new Error('Environment variable "TIMETABLE_PAGE_URL" is not defined');
-
-    return fetch(process.env.TIMETABLE_PAGE_URL)
+    return fetch(this.pageUrl)
       .then(res => res.text());
   }
 }
