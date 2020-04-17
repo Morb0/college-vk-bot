@@ -50,25 +50,29 @@ export class DistanceTimetableRetriever {
   private extractScheduleFromDocumentByOffset(content: string): string[] {
     const $ = cheerio.load(content);
     const $rows = $('tbody tr');
-    const curDayOfWeek = new Date(new Date().toLocaleString('en-US', {timeZone: 'Europe/Moscow'})).getDay();
+    const curDayOfWeek = this.getMoscowWeekday();
     const schedule = [];
     
     for (let i = 0; i < 5; i++) {
-      const emptyRowsCount = curDayOfWeek-1;
       const rowOffsetWithWeekday = this.rowsOffset*curDayOfWeek;
       const rowOffsetWithLesson = rowOffsetWithWeekday+i;
-      const rowOffsetWithSkippedEmptyRows = rowOffsetWithLesson - emptyRowsCount;
       let columnIndex = this.columnsOffset;
       
       if (i === 0) // Skip first date row
         columnIndex++;
-
-      const $cell = $rows.eq(rowOffsetWithSkippedEmptyRows).find('td').eq(columnIndex);
+      
+      const $cell = $rows.eq(rowOffsetWithLesson).find('td').eq(columnIndex);
       const lessonInfo = $cell.text();
       schedule.push(lessonInfo);
     }
     
     return schedule;
+  }
+  
+  private getMoscowWeekday() {
+    const dayOfWeek = new Date(new Date().toLocaleString('en-US', {timeZone: 'Europe/Moscow'})).getDay();
+    if (dayOfWeek > 5) return 1;
+    return dayOfWeek;
   }
   
   private static prettifyLessonInfo(lessonInfo: string): string {
