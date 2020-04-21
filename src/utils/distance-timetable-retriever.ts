@@ -50,7 +50,7 @@ export class DistanceTimetableRetriever {
   private extractScheduleFromDocumentByOffset(content: string): string[] {
     const $ = cheerio.load(content);
     const $rows = $('tbody tr');
-    const curDayOfWeek = this.getMoscowWeekday();
+    const curDayOfWeek = this.getMoscowWeekday()-1; // TEMP. Actually timetable starts from Tuesday
     const schedule = [];
     
     for (let i = 0; i < 5; i++) {
