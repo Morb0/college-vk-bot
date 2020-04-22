@@ -7,6 +7,7 @@ export class DistanceTimetableRetriever {
   private readonly htmlUrlSelector: string;
   private readonly columnsOffset: number;
   private readonly rowsOffset: number;
+  private readonly lessonsCount = 6;
   
   constructor() {
     this.pageUrl = process.env.DIST_TIMETABLE_PAGE_URL!;
@@ -53,11 +54,10 @@ export class DistanceTimetableRetriever {
     const curDayOfWeek = this.getMoscowWeekday()-1; // TEMP. Actually timetable starts from Tuesday
     const schedule = [];
     
-    for (let i = 0; i < 5; i++) {
-      const rowOffsetWithWeekday = this.rowsOffset*curDayOfWeek;
-      const rowOffsetWithLesson = rowOffsetWithWeekday+i;
-      
-      const $cell = $rows.eq(rowOffsetWithLesson).find('td').eq(this.columnsOffset);
+    for (let i = 0; i < this.lessonsCount; i++) {
+      const rowOffsetWithLesson = (this.lessonsCount*(curDayOfWeek-1))+i; // Magic nums ✨
+
+      const $cell = $rows.eq(this.rowsOffset+rowOffsetWithLesson).find('td').eq(this.columnsOffset);
       const lessonInfo = $cell.text();
       schedule.push(lessonInfo);
     }
