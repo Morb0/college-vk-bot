@@ -56,12 +56,8 @@ export class DistanceTimetableRetriever {
     for (let i = 0; i < 5; i++) {
       const rowOffsetWithWeekday = this.rowsOffset*curDayOfWeek;
       const rowOffsetWithLesson = rowOffsetWithWeekday+i;
-      let columnIndex = this.columnsOffset;
       
-      if (i === 0) // Skip first date row
-        columnIndex++;
-      
-      const $cell = $rows.eq(rowOffsetWithLesson).find('td').eq(columnIndex);
+      const $cell = $rows.eq(rowOffsetWithLesson).find('td').eq(this.columnsOffset);
       const lessonInfo = $cell.text();
       schedule.push(lessonInfo);
     }
