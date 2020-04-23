@@ -55,9 +55,13 @@ export class DistanceTimetableRetriever {
     const schedule = [];
     
     for (let i = 0; i < this.lessonsCount; i++) {
-      const rowOffsetWithLesson = (this.lessonsCount*(curDayOfWeek-1))+i; // Magic nums ✨
+      const computedRowOffsetWithLesson = (this.lessonsCount*(curDayOfWeek-1))+i; // Magic nums ✨
+      let computedColumnOffset = this.columnsOffset;
+      
+      if (i === 0)
+        computedColumnOffset++;
 
-      const $cell = $rows.eq(this.rowsOffset+rowOffsetWithLesson).find('td').eq(this.columnsOffset);
+      const $cell = $rows.eq(this.rowsOffset+computedRowOffsetWithLesson).find('td').eq(computedColumnOffset);
       const lessonInfo = $cell.text();
       schedule.push(lessonInfo);
     }
