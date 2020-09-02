@@ -13,9 +13,9 @@ export class Bootstrap {
     this.commandHandler = new CommandHandler(this.vk);
   }
   
-  boot(): void {
-    this.commandHandler.loadAndHandle();
-    this.vk.updates.startPolling();
+  async boot(): Promise<void> {
+    await this.commandHandler.loadAndHandle();
+    await this.vk.updates.startPolling();
     console.log('Bot started');
   }
 }
