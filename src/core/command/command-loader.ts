@@ -30,7 +30,7 @@ export class CommandLoader {
   }
   
   private searchCommandFilenames(): void {
-    this.filenames = glob.sync(`${this.commandsDirPath}/*.js`);
+    this.filenames = glob.sync(`${this.commandsDirPath}/[!_]*.{js,ts}`);
   }
   
   private importCommandsPromises(): void {
