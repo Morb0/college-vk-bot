@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import sharp, { Region } from 'sharp';
+import { timeTableConfig } from '../configs/timetable.config';
 
 export class TimetableRetriever {
   private readonly pageUrl: string;
@@ -10,11 +11,11 @@ export class TimetableRetriever {
   private readonly regionHeight: number;
   
   constructor() {
-    this.pageUrl = process.env.TIMETABLE_PAGE_URL!;
-    this.htmlImgSelector = process.env.TIMETABLE_HTML_IMG_SELECTOR!;
-    this.leftOffset = +process.env.TIMETABLE_LEFT_OFFSET!;
-    this.regionWidth = +process.env.TIMETABLE_REGION_WIDTH!;
-    this.regionHeight = +process.env.TIMETABLE_REGION_HEIGHT!;
+    this.pageUrl = timeTableConfig.pageURL;
+    this.htmlImgSelector = timeTableConfig.htmlImgSelector;
+    this.leftOffset = timeTableConfig.leftOffset;
+    this.regionWidth = timeTableConfig.regionWidth;
+    this.regionHeight = timeTableConfig.regionHeight;
   }
   
   public async getTimetableRegion(): Promise<Buffer> {
